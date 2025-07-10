@@ -1,0 +1,928 @@
+{
+  "name": "TIKTOK - TB mentioning videos extractor",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/clockworks~tiktok-scraper/runs?token=apify_api_Gdv1HzkBdTTkv3G2bIpazLimKi7G0x2ilDNK",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"excludePinnedPosts\": true,\n    \"proxyCountryCode\": \"US\",\n    \"resultsPerPage\": 20,\n    \"hashtags\": [\n        \"shoptrybello\",\n        \"trybello hair\",\n        \"TryBello hair spray\",\n        \"TryBello Hair Helper\",\n        \"TryBello review\",\n        \"TryBello before after\",\n        \"TryBello transformation\",\n        \"TryBello tutorial\",\n        \"Trybello\"\n    ],\n    \"shouldDownloadAvatars\": false,\n    \"shouldDownloadCovers\": false,\n    \"shouldDownloadMusicCovers\": true,\n    \"shouldDownloadSlideshowImages\": false,\n    \"shouldDownloadSubtitles\": false,\n    \"shouldDownloadVideos\": true,\n    \"mergeAudioVideo\": true,\n    \"preferHighQuality\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -280,
+        40
+      ],
+      "id": "fe053887-a30b-46b2-b035-5dd6f821f83a",
+      "name": "Request to Apify",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/datasets/{{ $json.data.defaultDatasetId }}/items?token=apify_api_3O9vibjRxB8X0YQvJbjuRwyWLNQbbD4oSZgL",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        100,
+        40
+      ],
+      "id": "f0090281-0731-41d1-8d8f-49a5cc2bed9e",
+      "name": "Get videos - Aplify",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -100,
+        40
+      ],
+      "id": "b299dbac-2e33-4bde-90c6-25d8530533c8",
+      "name": "Wait for Apify",
+      "webhookId": "d963500b-dd63-48ca-b22d-46b56e6763b5"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.webVideoUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1260,
+        -380
+      ],
+      "id": "57723c06-5add-4372-8179-40a277e8a386",
+      "name": "Get video Details"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.videoUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            },
+            {
+              "name": "Referer",
+              "value": "https://www.tiktok.com/"
+            },
+            {
+              "name": "Accept",
+              "value": "video/mp4,video/webm,video/*;q=0.9,application/octet-stream;q=0.8"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.5"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Cookie",
+              "value": "={{ $json.cookies }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1840,
+        -80
+      ],
+      "id": "79a6eb4b-75d9-46a5-80ba-c4a73d5a1c78",
+      "name": "Download Video",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "//processes all items\nreturn $input.all().map(item => {\n  const html = item.json.data;\n  const headers = item.json.headers || {};\n  const cookies = headers['set-cookie'] || [];\n  \n  if (!html) {\n    return { json: { error: \"HTML body is undefined for this item.\" } };\n  }\n  \n  const regex = /<script id=\"__UNIVERSAL_DATA_FOR_REHYDRATION__\" type=\"application\\/json\">([\\s\\S]*?)<\\/script>/;\n  const match = html.match(regex);\n  \n  if (match) {\n    try {\n      const jsonStr = match[1];\n      const data = JSON.parse(jsonStr);\n      const videoUrl = data?.__DEFAULT_SCOPE__?.[\"webapp.video-detail\"]?.itemInfo?.itemStruct?.video?.playAddr;\n      \n      if (!videoUrl) {\n        return { json: { error: \"Could not find video URL in the JSON data.\" } };\n      }\n      \n      return { json: { videoUrl, cookies: cookies.join('; ') } };\n    } catch (error) {\n      return { json: { error: `Error parsing JSON: ${error.message}` } };\n    }\n  } else {\n    return { json: { error: \"Could not find __UNIVERSAL_DATA_FOR_REHYDRATION__ script in the HTML.\" } };\n  }\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1000,
+        -380
+      ],
+      "id": "688f45b6-2a5e-430f-bdae-4daf43119713",
+      "name": "ADV URL EXTRACTION"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all videos from the previous node\nconst videos = $input.all();\n\n// Set the number of days here\nconst numberOfDays = 7;\nconst cutoffDate = new Date();\ncutoffDate.setDate(cutoffDate.getDate() - numberOfDays);\n\nconsole.log(`Filtering for videos newer than: ${cutoffDate.toISOString()}`);\nconsole.log(`Total videos before filtering: ${videos.length}`);\n\n// Process each video to check its date\nconst filteredVideos = videos.filter(item => {\n  try {\n    // Check if the video has createTime or createTimeISO\n    if (item.json && item.json.createTimeISO) {\n      const videoDate = new Date(item.json.createTimeISO);\n      return videoDate >= cutoffDate;\n    } \n    else if (item.json && item.json.createTime) {\n      const timestamp = parseInt(item.json.createTime) * 1000;\n      const videoDate = new Date(timestamp);\n      return videoDate >= cutoffDate;\n    }\n    // Try accessing properties directly if not found in item.json\n    else if (item.createTimeISO) {\n      const videoDate = new Date(item.createTimeISO);\n      return videoDate >= cutoffDate;\n    }\n    else if (item.createTime) {\n      const timestamp = parseInt(item.createTime) * 1000;\n      const videoDate = new Date(timestamp);\n      return videoDate >= cutoffDate;\n    }\n    \n    // If no date fields found\n    return false;\n  } catch (error) {\n    // Log errors but don't fail the entire operation\n    console.log(`Error processing item: ${error.message}`);\n    return false;\n  }\n});\n\nconsole.log(`Total videos after filtering: ${filteredVideos.length}`);\nreturn filteredVideos;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        580,
+        240
+      ],
+      "id": "9f57e368-76c1-4825-a54b-41281652564f",
+      "name": "Filter recent videos",
+      "alwaysOutputData": true,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -500,
+        40
+      ],
+      "id": "09bb80bb-e6e2-458c-bca5-e78fe9978ac2",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C08RM87QYA0",
+          "mode": "list",
+          "cachedResultName": "trybello-new-posted-videos-from-tiktok"
+        },
+        "text": "=New videos mentioning our product scrapped for :  {{ $('Schedule Trigger').item.json.timestamp }}\n\n\n\nDrive folder link: https://drive.google.com/drive/folders/1kFVQzALcueYLgh3YMFZ9GmLl4TvG899a?dmr=1&ec=wgc-drive-hero-goto",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        3100,
+        240
+      ],
+      "id": "88bd9030-51c8-4256-a4a0-cf5d10047886",
+      "name": "Slack",
+      "webhookId": "eebdbfa2-c3a0-4af0-860d-6a21305ac280",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "0DuT0unZDiKwbnLq",
+          "name": "Ammar's Slack Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const getFirstItemOnly = (items) => {\n  // Check if there's at least one item\n  if (items && items.length > 0) {\n    // Return just the first item as an array (n8n expects arrays)\n    return [items[0]];\n  }\n  // Return empty array if no items exist\n  return [];\n};\n\n// Apply the function to incoming items\nconst firstItemOnly = getFirstItemOnly($input.all());\n\n// Return only the first item\nreturn firstItemOnly;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        240
+      ],
+      "id": "477ce6e8-9cbe-4374-b34d-45b05a5f8a66",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "355c52c4-4a35-43a0-9911-72f58e461e6a",
+              "leftValue": "={{ $json.authorMeta.name }}",
+              "rightValue": "shoptrybello",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        40
+      ],
+      "id": "fd0e1d1b-5c1c-479c-8c79-53477a02a68b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Get videos - Aplify').item.json.createTimeISO }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1kFVQzALcueYLgh3YMFZ9GmLl4TvG899a",
+          "mode": "list",
+          "cachedResultName": "Tb mentioning tiktoks",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1kFVQzALcueYLgh3YMFZ9GmLl4TvG899a"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -480,
+        -380
+      ],
+      "id": "264b772d-fbc9-4d2d-8aee-afa9bee7652a",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "7FQ3Op8deaRQpLwO",
+          "name": "Ammar Drive Access"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.webVideoUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "7002307c-fb7d-4923-a50f-f01a490eab96",
+      "name": "Get TikTok Video Page Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1100,
+        240
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process all items, not just the first one\nreturn $input.all().map(item => {\n  const html = item.json.data;\n  const headers = item.json.headers || {};\n  const cookies = headers['set-cookie'] || [];\n  \n  if (!html) {\n    // Skip items with no HTML data instead of throwing an error\n    return { json: { error: \"HTML body is undefined for this item.\" } };\n  }\n  \n  const regex = /<script id=\"__UNIVERSAL_DATA_FOR_REHYDRATION__\" type=\"application\\/json\">([\\s\\S]*?)<\\/script>/;\n  const match = html.match(regex);\n  \n  if (match) {\n    try {\n      const jsonStr = match[1];\n      const data = JSON.parse(jsonStr);\n      const videoUrl = data?.__DEFAULT_SCOPE__?.[\"webapp.video-detail\"]?.itemInfo?.itemStruct?.video?.playAddr;\n      \n      // Try alternate paths if the primary path fails\n      if (!videoUrl) {\n        // Look for alternate locations of the video URL\n        const altVideoUrl = data?.__DEFAULT_SCOPE__?.[\"webapp.video-detail\"]?.itemInfo?.itemStruct?.video?.downloadAddr ||\n                          data?.__DEFAULT_SCOPE__?.[\"webapp.video-detail\"]?.itemInfo?.video?.playAddr;\n        \n        if (altVideoUrl) {\n          return { json: { videoUrl: encodeURI(altVideoUrl), cookies: cookies.join('; ') } };\n        }\n        \n        return { json: { error: \"Could not find video URL in the JSON data.\" } };\n      }\n      \n      // Encode the URL to handle special characters\n      return { json: { videoUrl: encodeURI(videoUrl), cookies: cookies.join('; ') } };\n      \n    } catch (error) {\n      return { json: { error: `Error parsing JSON: ${error.message}` } };\n    }\n  } else {\n    return { json: { error: \"Could not find __UNIVERSAL_DATA_FOR_REHYDRATION__ script in the HTML.\" } };\n  }\n});"
+      },
+      "id": "5d246ea3-7f4a-4818-9339-168a5141b3aa",
+      "name": "Scrape raw video URL",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1300,
+        240
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.videoUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            },
+            {
+              "name": "Referer",
+              "value": "https://www.tiktok.com/"
+            },
+            {
+              "name": "Accept",
+              "value": "video/mp4,video/webm,video/*;q=0.9,application/octet-stream;q=0.8"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.5"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Cookie",
+              "value": "={{ $json.cookies }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "e938dea7-f559-473e-bf0a-c281adc59fee",
+      "name": "Output video file without watermark",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1540,
+        240
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Schedule Trigger').item.json['Readable date'] }} - {{ $('Get videos - Aplify').item.json.hashtags[0].name }} - {{ $('Get videos - Aplify').item.json.authorMeta.name }} - tiktokshop",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1kFVQzALcueYLgh3YMFZ9GmLl4TvG899a",
+          "mode": "list",
+          "cachedResultName": "Tb mentioning tiktoks",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1kFVQzALcueYLgh3YMFZ9GmLl4TvG899a"
+        },
+        "options": {}
+      },
+      "id": "feb3cdc1-ea28-42c3-a061-0d8490e0cfc3",
+      "name": "Upload to Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        2000,
+        240
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "7FQ3Op8deaRQpLwO",
+          "name": "Ammar Drive Access"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "writer",
+            "type": "anyone",
+            "allowFileDiscovery": true
+          }
+        },
+        "options": {}
+      },
+      "id": "87da555e-9058-41dc-9988-6eea25fddd52",
+      "name": "Set file permissions to public with link",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        2280,
+        240
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "7FQ3Op8deaRQpLwO",
+          "name": "Ammar Drive Access"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "aab53bb8-1998-4f42-9c87-fc3cfc5066c2",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "trybello",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "91883402-ea1c-4d7b-a797-b5808edc5636",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "TryBello",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "747ff353-889f-427b-9395-62c261c16904",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "Try bello",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "3505d4a7-9674-4b21-bdc6-2e0a58699b57",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "Try Bello",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "184e0fd2-0b65-43d9-a63a-5d3c4e3c4b00",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "TRY BELLO",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        320
+      ],
+      "id": "9d64cb2b-fc77-4e10-96a1-6a9833c42dc0",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "webVideoUrl",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        860,
+        240
+      ],
+      "id": "98cf6daf-b5c5-4a6c-b51d-8a568565c00a",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1TTOcQyPo-H67yml_6CtD-9hZf7t6LXeyptJFwGxXkqI",
+          "mode": "list",
+          "cachedResultName": "Tiktok videos sheet ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TTOcQyPo-H67yml_6CtD-9hZf7t6LXeyptJFwGxXkqI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TTOcQyPo-H67yml_6CtD-9hZf7t6LXeyptJFwGxXkqI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ $('Schedule Trigger').item.json['Readable date'] }} - {{ $('Get videos - Aplify').item.json.hashtags[0].name }} - {{ $('Get videos - Aplify').item.json.authorMeta.name }} - tiktokshop",
+            "Link": "={{ $('Get videos - Aplify').item.json.webVideoUrl }}",
+            "Creator": "={{ $('Get videos - Aplify').item.json.authorMeta.name }}",
+            "Duration": "={{ $('Get videos - Aplify').item.json.videoMeta.duration }}",
+            "Music name": "={{ $('Get videos - Aplify').item.json.musicMeta.musicName }}"
+          },
+          "matchingColumns": [
+            "Title"
+          ],
+          "schema": [
+            {
+              "id": "SR number",
+              "displayName": "SR number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Creator",
+              "displayName": "Creator",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Music name",
+              "displayName": "Music name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Angle",
+              "displayName": "Angle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Duration",
+              "displayName": "Duration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Launched",
+              "displayName": "Launched",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2540,
+        240
+      ],
+      "id": "d33a84dc-fa52-4274-8790-c1eb3443999f",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oHVrKXgWWtkf98YR",
+          "name": "Ammar Sheets access"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1560,
+        -60
+      ],
+      "id": "f2fccb34-cbd0-47f7-b80b-4405407a51c4",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        1300,
+        -140
+      ],
+      "id": "48259c84-ce29-4fa4-8541-2e5a8c35cffc"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Request to Apify": {
+      "main": [
+        [
+          {
+            "node": "Wait for Apify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get videos - Aplify": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Apify": {
+      "main": [
+        [
+          {
+            "node": "Get videos - Aplify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get video Details": {
+      "main": [
+        [
+          {
+            "node": "ADV URL EXTRACTION",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video": {
+      "main": [
+        [
+          {
+            "node": "Upload to Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ADV URL EXTRACTION": {
+      "main": [
+        []
+      ]
+    },
+    "Filter recent videos": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Request to Apify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape raw video URL": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Set file permissions to public with link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get TikTok Video Page Data": {
+      "main": [
+        [
+          {
+            "node": "Scrape raw video URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output video file without watermark": {
+      "main": [
+        []
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Filter recent videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set file permissions to public with link": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Get TikTok Video Page Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack": {
+      "main": [
+        []
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Download Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "dce3d112-80a6-437f-86a2-de0ddbdb3333",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8299d4f26d2870c046a56402a35299ee53cd421c211f1abae13ffa1e40b769be"
+  },
+  "id": "qzxh3jIQUDbwfWFu",
+  "tags": []
+}

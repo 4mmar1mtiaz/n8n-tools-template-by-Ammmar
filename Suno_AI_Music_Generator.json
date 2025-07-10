@@ -1,0 +1,231 @@
+{
+  "name": "Suno AI Music Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -380,
+        0
+      ],
+      "id": "da8d9641-313c-45c5-8b2a-72318d97b824",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://apibox.erweima.ai/api/v1/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "A calm and relaxing piano track with soft melodies"
+            },
+            {
+              "name": "style",
+              "value": "Classical"
+            },
+            {
+              "name": "title",
+              "value": "Peaceful Piano Meditation"
+            },
+            {
+              "name": "customMode",
+              "value": "true"
+            },
+            {
+              "name": "instrumental",
+              "value": "true"
+            },
+            {
+              "name": "model",
+              "value": "V3_5"
+            },
+            {
+              "name": "negativeTags",
+              "value": "Heavy Metal, Upbeat Drums"
+            },
+            {
+              "name": "callBackUrl",
+              "value": "https://api.example.com/callback"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "e2b9118f-304e-4a9a-9612-80ff6c2449f3",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "dvqrc7UPwNQ2iyyw",
+          "name": "Suno"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://apibox.erweima.ai/api/v1/generate/record-info?taskId={{ $json.data.taskId }}\n",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        60,
+        0
+      ],
+      "id": "c773e6a0-8491-401b-8605-cb5b43c1d0d0",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "dvqrc7UPwNQ2iyyw",
+          "name": "Suno"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "HTTP Request": [
+      {
+        "json": {
+          "code": 200,
+          "msg": "success",
+          "data": {
+            "taskId": "0af6ecf5b294df597bdc187d58284619"
+          }
+        }
+      }
+    ],
+    "HTTP Request1": [
+      {
+        "json": {
+          "code": 200,
+          "msg": "success",
+          "data": {
+            "taskId": "0af6ecf5b294df597bdc187d58284619",
+            "parentMusicId": "",
+            "param": "{\"callBackUrl\":\"https://api.example.com/callback\",\"customMode\":true,\"instrumental\":true,\"model\":\"V3_5\",\"negativeTags\":\"Heavy Metal, Upbeat Drums\",\"prompt\":\"A calm and relaxing piano track with soft melodies\",\"style\":\"Classical\",\"title\":\"Peaceful Piano Meditation\"}",
+            "response": {
+              "taskId": "9b98937b8aa2400ab721ebb504be9781",
+              "sunoData": [
+                {
+                  "id": "b85e9377-54c5-4b93-a201-092491c9fe6e",
+                  "audioUrl": "https://apiboxfiles.erweima.ai/Yjg1ZTkzNzctNTRjNS00YjkzLWEyMDEtMDkyNDkxYzlmZTZl.mp3",
+                  "sourceAudioUrl": "https://cdn1.suno.ai/b85e9377-54c5-4b93-a201-092491c9fe6e.mp3",
+                  "streamAudioUrl": "https://mfile.erweima.ai/Yjg1ZTkzNzctNTRjNS00YjkzLWEyMDEtMDkyNDkxYzlmZTZl",
+                  "sourceStreamAudioUrl": "https://cdn1.suno.ai/b85e9377-54c5-4b93-a201-092491c9fe6e.mp3",
+                  "imageUrl": "https://apiboxfiles.erweima.ai/Yjg1ZTkzNzctNTRjNS00YjkzLWEyMDEtMDkyNDkxYzlmZTZl.jpeg",
+                  "sourceImageUrl": "https://cdn2.suno.ai/image_b85e9377-54c5-4b93-a201-092491c9fe6e.jpeg",
+                  "prompt": "",
+                  "modelName": "chirp-v3-5",
+                  "title": "Peaceful Piano Meditation",
+                  "tags": "Classical",
+                  "createTime": 1749688541060,
+                  "duration": 137.2
+                },
+                {
+                  "id": "201d07e1-4165-4bd0-a412-3b27599fd56f",
+                  "audioUrl": "https://apiboxfiles.erweima.ai/MjAxZDA3ZTEtNDE2NS00YmQwLWE0MTItM2IyNzU5OWZkNTZm.mp3",
+                  "sourceAudioUrl": "https://cdn1.suno.ai/201d07e1-4165-4bd0-a412-3b27599fd56f.mp3",
+                  "streamAudioUrl": "https://mfile.erweima.ai/MjAxZDA3ZTEtNDE2NS00YmQwLWE0MTItM2IyNzU5OWZkNTZm",
+                  "sourceStreamAudioUrl": "https://cdn1.suno.ai/201d07e1-4165-4bd0-a412-3b27599fd56f.mp3",
+                  "imageUrl": "https://apiboxfiles.erweima.ai/MjAxZDA3ZTEtNDE2NS00YmQwLWE0MTItM2IyNzU5OWZkNTZm.jpeg",
+                  "sourceImageUrl": "https://cdn2.suno.ai/image_201d07e1-4165-4bd0-a412-3b27599fd56f.jpeg",
+                  "prompt": "",
+                  "modelName": "chirp-v3-5",
+                  "title": "Peaceful Piano Meditation",
+                  "tags": "Classical",
+                  "createTime": 1749688541060,
+                  "duration": 182.48
+                }
+              ]
+            },
+            "status": "SUCCESS",
+            "type": "chirp-v3-5",
+            "operationType": "generate",
+            "errorCode": null,
+            "errorMessage": null,
+            "createTime": 1749688377000
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b66ac3e9-e61a-4620-b01e-c8fb617f9cd0",
+  "meta": {
+    "instanceId": "5e299a1c9534d3df40876524706c82a0adb5dc6203538ef644e25b7d869a117f"
+  },
+  "id": "LeIMCMD1qpjL2WXj",
+  "tags": []
+}

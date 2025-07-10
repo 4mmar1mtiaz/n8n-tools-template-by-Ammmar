@@ -1,0 +1,494 @@
+{
+  "name": "Book Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -380,
+        -160
+      ],
+      "id": "f16ef5c2-9b60-4c3e-8ba3-1ba8bf5d9445",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are an AI designed to generate compelling ideas for non-fiction books. It must solve a spefific problem, people need help with.\n\nMake it non-fiction and fun. No storytelling.\n\nEach output should follow this exact format:\n\nTitle: Write a catchy, attention-grabbing book title.\n\nIdea: In 1 to 2 sentences, describe the book. Be specific and visual.\n\nOverview: Briefly describe what the reader will learn.\n\nStatus: Always output \"for production\".\n\nDo not add any extra text or explanations. Only output these four fields, each starting on a new line, using this format:\n\nvbnet\nCopy\nEdit\nTitle: [Your title here]\nIdea: [Short idea description here]\nOverview: [Short environment description here]\nStatus: for production"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -220,
+        -160
+      ],
+      "id": "71f1ed2f-2687-4f9e-8adf-8047cb463487",
+      "name": "Idea Generator",
+      "credentials": {
+        "openAiApi": {
+          "id": "HDfmiZDKbWWGL2XM",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an AI book writer. Keep your prompts short, clear, and easy to understand.\n\nYour task is to generate a 13-chapter book outline based on the core idea: \n\n{{ $json.message.content.Idea }}\n\nEach chapter must follow these exact rules:\n\nWriting Style Requirements:\n\nWrite with precise, grounded realism.\nUse concrete details and factual description.\nAvoid style, flair, or flourish.\n\nEach chapter must focus on a single static moment —\nno story arcs, no buildup, no emotional payoff.\n\nWrite as if you're documenting the scene, not telling a story.\nAvoid metaphors, emotion, opinions, or internal monologue.\n\nTone should feel cold, observational, and stripped-down.\nThink like a field report or case study — not a novel.\n\nUse mid-zoom or wide-setting descriptions that clearly establish setting, context, and physical elements of the scene.\nStay focused on {{ $json.message.content.Overview }}.\n\nAbsolutely no storytelling.\nNo transitions. No backstory. No dialogue.\nNo cause and effect. No poetic language.\n\n\nPrompt Rules:\n\nWrite an overview of what people will learn in the chapter, what will be covered etc. Write in third-person perspective only. In the first word, explain which chapter this is e.g. \"Chatper 1: ...\"\n\nMaximum 500 characters per chapter.\n\nUse the provided Idea and Overview only.\nDo not invent or improvise.\n\nCore Inputs:\nIdea: {{ $json.message.content.Idea }}\nDescription: {{ $json.message.content.Overview }}\n\nOutput Template:\nIdea: {{ $json.message.content.Idea }}\nOverview: {{ $json.message.content.Overview }}\n\nMake sure you label each chapter e.g:\nChapter 1: \"Chapter 1 teaches...\"\nChapter 2: \"Chapter 2 teaches...\"\nChapter 3: \"Chapter 3 teaches...\"\nChapter 4: \"Chapter 4 teaches...\"\nChapter 5: \"Chapter 5 teaches...\"\nChapter 6: \"Chapter 6 teaches...\"\nChapter 7: \"Chapter 7 teaches...\"\nChapter 8: \"Chapter 8 teaches...\"\nChapter 9: \"Chapter 9 teaches...\"\nChapter 10: \"Chapter 10 teaches...\"\nChapter 11: \"Chapter 11 teaches...\"\nChapter 12: \"Chapter 12 teaches...\"\nChapter 13: \"Chapter 13 teaches...\""
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -400,
+        60
+      ],
+      "id": "7b6b3620-b127-4762-8f66-73b97ff9de3f",
+      "name": "Prompt Generator",
+      "credentials": {
+        "openAiApi": {
+          "id": "HDfmiZDKbWWGL2XM",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let rawScenes;\n\ntry {\n  const content = items[0].json.message.content;\n\n  if (content && typeof content === \"object\") {\n    rawScenes = Object.entries(content)\n      .filter(([key]) => key.toLowerCase().startsWith(\"chapter\"))\n      .map(([, value]) => value);\n  } else {\n    throw new Error(\"Scene data is missing or not formatted as an object.\");\n  }\n\n} catch (error) {\n  throw new Error(\"Scene extraction failed: \" + error.message);\n}\n\nconst formattedOutput = rawScenes.map(sceneText => ({\n  json: {\n    description: sceneText\n  }\n}));\n\nreturn formattedOutput;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        60
+      ],
+      "id": "a563e509-7cd8-4cc0-9c72-6a8eb95ec839",
+      "name": "Format Prompts"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You're an AI book writer.\nYour writing style = Alex Hormozi.\nNo fluff. No intro waffle. Just write the book.\n\nFormatting rules (Markdown output):\n\nEach chapter must be 1,000+ words\n\nUse H1 (#) for chapter titles\n\nUse H2 (##) for section headers\n\nUse H3 (###) for sub-sections\n\nDo not label headings (no “H3:”, “Section Two:” etc.)\n\nLine-by-line writing:\n\nOne sentence per line\n\nBreak up long paragraphs\n\nAvoid dense text\n\nMax 2–4 lines per paragraph\n\nLeave whitespace between sections\n\nStructure & Style Guidelines:\n\nMix formatting:\n\nBullet points (-)\n\nNumbered lists (1., 2., 3.)\n\nBold for key points\n\nItalics for sarcasm or emphasis\n\nBold + italics for urgency\n\nUse > blockquotes for insights, quotes, CTAs, tips\n\nInclude:\n\n💡 Pro Tip\n\n⚠️ Warning\n\n✅ Quick Win\n\n🧠 Side Note\n\nUse [ ] and [x] for checklists\n\nUse horizontal dividers (---) to break up ideas\n\nSparingly add emoji at the start of bullets or headers\n\nUse divider bursts like --- 🔥🔥🔥 --- only when it adds energy\n\nPlace CTAs in blockquotes after every 2–3 sections\n\nInsert [IMAGE PLACEHOLDER] or [VIDEO PLACEHOLDER] when relevant\n\nEnd each chapter with a short, motivating summary line\n\nBegin new chapters on a new page (manually)\n\nDO NOT:\n\nDon’t start with lines like “Let’s do this” or “Here we go”\n\nDon’t explain what you’re going to do. Just do it\n\nDon’t label sections with things like “Section Two”\n\nDon’t write heading types like “H3” in the actual content\n\nDon’t use any em dashes, hyphens, or semicolons\n\nDon’t cut the content off early – write all chapters in full\n\nContent generation instructions:\n\nWrite the introduction based on this:\n\njavascript\nCopy\nEdit\n{{ $('Prompt Generator').item.json.message.content.Overview }}\nThen write the following chapters in full, each 1,000+ words:\n\nbash\nCopy\nEdit\n# Chapter 1\n{{ $json.description[0]['Chapter 1'] }}\n\n# Chapter 2\n{{ $json.description[1]['Chapter 2'] }}\n\n# Chapter 3\n{{ $json.description[2]['Chapter 3'] }}\n\n# Chapter 4\n{{ $json.description[3]['Chapter 4'] }}\n\n# Chapter 5\n{{ $json.description[4]['Chapter 5'] }}\n\n# Chapter 6\n{{ $json.description[5]['Chapter 6'] }}\n\n# Chapter 7\n{{ $json.description[6]['Chapter 7'] }}\n\n# Chapter 8\n{{ $json.description[7]['Chapter 8'] }}\n\n# Chapter 9\n{{ $json.description[8]['Chapter 9'] }}\n\n# Chapter 10\n{{ $json.description[9]['Chapter 10'] }}\n\n# Chapter 11\n{{ $json.description[10]['Chapter 11'] }}\n\n# Chapter 12\n{{ $json.description[11]['Chapter 12'] }}\n\n# Chapter 13\n{{ $json.description[12]['Chapter 13'] }}\nWrite an outro:\n\nInclude these funnel links clearly and cleanly throughout, especially in blockquotes after every 2–3 sections and again in the outro:\n\nshell\nCopy\nEdit\n> 🚀 Want to get more customers, make more profit & save 100s of hours with AI?  \n> Join the **AI Profit Boardroom** → https://go.juliangoldie.com/ai-profit-boardroom\n\n> ✅ Get a FREE SEO strategy Session + Discount  \n> https://go.juliangoldie.com/strategy-session\n\n> 🤯 Want more money, traffic and sales from SEO?  \n> Join the **SEO Elite Circle** → https://go.juliangoldie.com/register\n\n> 🤖 Need AI Automation Services?  \n> Book a Discovery Call → https://juliangoldieaiautomation.com/",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -360,
+        280
+      ],
+      "id": "c254ae67-8b71-405d-b44d-16b8d511cd12",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "driveId": "=myDrive",
+        "folderId": "=1Yw-6KfdCEFtXkjVgTFHQzUmpbcoCm3h_",
+        "title": "={{ $('Idea Generator').item.json.message.content.Title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        280
+      ],
+      "id": "fe2749e7-4078-43af-830b-2a4eee0ef2cc",
+      "name": "Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "XjlKRRtaVyENai8t",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('AI Agent').item.json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        200,
+        280
+      ],
+      "id": "de911db8-5923-4dae-93d9-d80c88fe9e2c",
+      "name": "Google Docs1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "XjlKRRtaVyENai8t",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.5-pro-preview-05-06",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        400,
+        260
+      ],
+      "id": "158f838b-51d9-4697-88c0-3c322ccd9630",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "bMTimVpabZ0bILlJ",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1kHUz5aDRedexxZfY5_B18tewdVhkTFsB1_LZGJkLZRI",
+          "mode": "list",
+          "cachedResultName": "N8N Book Creator",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kHUz5aDRedexxZfY5_B18tewdVhkTFsB1_LZGJkLZRI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kHUz5aDRedexxZfY5_B18tewdVhkTFsB1_LZGJkLZRI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "PRODUCTION": "DONE",
+            "IDEA": "={{ $('Idea Generator').item.json.message.content.Idea }}",
+            "TITLE": "={{ $('Idea Generator').item.json.message.content.Title }}",
+            "LINK": "=https://docs.google.com/document/d/{{ $json.documentId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "IDEA",
+              "displayName": "IDEA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TITLE",
+              "displayName": "TITLE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PRODUCTION",
+              "displayName": "PRODUCTION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LINK",
+              "displayName": "LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -360,
+        480
+      ],
+      "id": "71fc58de-d202-4960-ab11-cc7337d0cc97",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6F5KjMHe0V0sZC8i",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Stage 1: \nIdea Generator",
+        "height": 100,
+        "width": 180,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        -160
+      ],
+      "id": "9100e855-e341-49bd-806c-eb98a35c71ce",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Stage 2:\nBook Prompts",
+        "height": 100,
+        "width": 180,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        60
+      ],
+      "id": "727c7422-0436-4f63-9ed5-c32a5c6356a1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Stage 4:\nLog to Sheets",
+        "height": 100,
+        "width": 180,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        480
+      ],
+      "id": "2b07b614-a53b-4c7e-9e3b-6eea1a6e54dc",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Stage 3:\nContent Writer",
+        "height": 100,
+        "width": 180,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        280
+      ],
+      "id": "14254d2a-94c3-4aab-bb5a-39851a936e25",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-05-15T07:30:01.428+07:00",
+          "Readable date": "May 15th 2025, 7:30:01 am",
+          "Readable time": "7:30:01 am",
+          "Day of week": "Thursday",
+          "Year": "2025",
+          "Month": "May",
+          "Day of month": "15",
+          "Hour": "07",
+          "Minute": "30",
+          "Second": "01",
+          "Timezone": "Asia/Bangkok (UTC+07:00)"
+        }
+      }
+    ],
+    "Google Docs1": [
+      {
+        "json": {
+          "documentId": "177v_dAopZrLjlWSMFSyVybZvG8MPIuYlV7FdTplPRH0"
+        }
+      }
+    ],
+    "Idea Generator": [
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "Title": "Inbox Zero, Life Max: Mastering Email Without Losing Your Sanity",
+              "Idea": "This book teaches overwhelmed professionals how to tame their email inboxes using psychology-backed systems, automation tricks, and behavioral hacks.",
+              "Overview": "Readers will learn how to reach and maintain 'Inbox Zero' by using filters, batching techniques, smart reply templates, and boundary-setting strategies that save hours per week and reduce digital stress.",
+              "Status": "for production"
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      }
+    ],
+    "Google Sheets": [
+      {
+        "json": {
+          "PRODUCTION": "DONE",
+          "IDEA": "This book teaches overwhelmed professionals how to tame their email inboxes using psychology-backed systems, automation tricks, and behavioral hacks.",
+          "TITLE": "Inbox Zero, Life Max: Mastering Email Without Losing Your Sanity",
+          "LINK": "https://docs.google.com/document/d/177v_dAopZrLjlWSMFSyVybZvG8MPIuYlV7FdTplPRH0"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Idea Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Idea Generator": {
+      "main": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Generator": {
+      "main": [
+        [
+          {
+            "node": "Format Prompts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Prompts": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Google Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Docs": {
+      "main": [
+        [
+          {
+            "node": "Google Docs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Docs1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "60c32968-0680-4606-b2d3-8de2429a02df",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5e299a1c9534d3df40876524706c82a0adb5dc6203538ef644e25b7d869a117f"
+  },
+  "id": "sIMK228LnQKMyGn1",
+  "tags": []
+}

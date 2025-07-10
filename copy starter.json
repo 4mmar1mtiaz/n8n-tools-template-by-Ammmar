@@ -1,0 +1,3068 @@
+{
+  "name": "copy starter",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        340
+      ],
+      "id": "600e85b9-7392-4f9f-8904-28514980435d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "1_JgjNjYOP58UPnE-2f_xK0OGkmkgUnfFacrfacU-lBY/"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        120,
+        120
+      ],
+      "id": "7eac62d2-63de-421c-99b2-92a72b178dda",
+      "name": "Download FB Comments",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "oNnROMDBn5Hlr3b3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1IsVH1oGf88iICN8yEe0zWhINyGpwhGkrQG3Lt1ovnQQ/edit?tab=t.0#heading=h.r1l6lqgtabdw"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        120,
+        300
+      ],
+      "id": "02dad51c-f887-4ed0-86b4-3649741e5ff3",
+      "name": "Download Avatar Doc",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "oNnROMDBn5Hlr3b3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1cJzPrYUIV_10Uf891yQA4PgkR98dYDytaYglYb4K8Z4/edit?tab=t.0#heading=h.l40gofl6wc7u"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        120,
+        480
+      ],
+      "id": "a74f58ae-c64d-48cd-8c23-f395766d8bfd",
+      "name": "Download Necessary Beliefs",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "oNnROMDBn5Hlr3b3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1kz6XXXX_gTWkQcIRVH51D4G-rEVJ3tuSVEwsMOya_tw/edit?tab=t.0"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        120,
+        680
+      ],
+      "id": "6abbd83b-7152-40e3-8b29-d3d19737716a",
+      "name": "Download Offer Brief",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "oNnROMDBn5Hlr3b3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1to9XY_LekrR8N7pduST8blLtmfUTk7q_1OloLcBmpbk/edit?tab=t.0#heading=h.28375inhz1jq"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        120,
+        860
+      ],
+      "id": "fa6f6f4f-e5c8-46b8-b782-7f9ebe80c98a",
+      "name": "Download Deep Research",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "oNnROMDBn5Hlr3b3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        780,
+        440
+      ],
+      "id": "0d75baa7-bb74-4800-9d1d-c75159343055",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "content",
+              "separateBy": "other",
+              "customSeparator": "=\"\"\"\n{{ $json.docType }}\n\"\"\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        480
+      ],
+      "id": "97456009-4388-4f44-9daa-dcad1a2dfe00",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1360,
+        660
+      ],
+      "id": "d60745bd-d3f0-4c42-af26-4edcfb2cb410",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f3187ca6-8416-4c33-b06d-6c7579962b25",
+              "name": "memKey",
+              "value": "={{ ((+new Date()) + Math.random()).toString(36).replace('.', '') }}",
+              "type": "string"
+            },
+            {
+              "id": "a31e225c-bf12-4f5f-9a35-c4c9b0833f68",
+              "name": "targetDemographic",
+              "value": "men and women aged 35-45 looking to make money",
+              "type": "string"
+            },
+            {
+              "id": "aff3fe18-7795-4e2e-8410-1ff919ea5240",
+              "name": "primaryBenefit",
+              "value": "Set up Successful E-commerce business",
+              "type": "string"
+            },
+            {
+              "id": "455a44c0-e0ae-4ba3-aea5-5a10f03bde2a",
+              "name": "productName",
+              "value": "Brand Builders Academy",
+              "type": "string"
+            },
+            {
+              "id": "7806d79b-ec8a-43fe-9dd9-5c5a8f88fe12",
+              "name": "outputSlackID",
+              "value": "U06HMJNHXBK",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -300,
+        480
+      ],
+      "id": "0c7a35d9-9a31-46bc-98d4-037177f8e4a7",
+      "name": "Set Configs"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2220,
+        660
+      ],
+      "id": "13afc87a-b39c-4f0a-a465-213e6f181939",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Great work. Now that you have fully completed that process, I want you to now please\nanalyze the current control ad copy that I am running. And let me know your thoughts:\n```\n{{ $json.adCopy }}\n```",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        480
+      ],
+      "id": "0e5aa621-2fe2-4a02-aa47-b7bb71812b3d",
+      "name": "Analyze Winning Control Copy",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2600,
+        660
+      ],
+      "id": "b61ed323-a9c5-46ff-bc05-062a8e9a28ce",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        3400,
+        660
+      ],
+      "id": "939c8d40-2e5e-4cda-bed5-2d4eda69f065",
+      "name": "Simple Memory3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Great work. Now that you have fully completed this analysis, I want you to simply generate five new hooks for this ad copy",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        3260,
+        480
+      ],
+      "id": "a2f6e509-2dd3-43fa-8966-75b11aa1a393",
+      "name": "Generate 5 New Hooks",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        3780,
+        660
+      ],
+      "id": "cb9286a2-6c94-40fd-b19c-53c74c83af91",
+      "name": "Simple Memory4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=I like these. Can you make some variations that are just a little bit shorter but still emulating the main control that we have running?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        3640,
+        480
+      ],
+      "id": "154da4f7-2874-4f38-b551-ae9f8d62cdcf",
+      "name": "Shorten Hooks",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        4880,
+        660
+      ],
+      "id": "f01b450c-ebd9-4a5b-a35b-1faf2f68d286",
+      "name": "Simple Memory5"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        5260,
+        660
+      ],
+      "id": "ff514967-2317-49a6-acc4-efd66ce8294f",
+      "name": "Simple Memory6"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        6220,
+        660
+      ],
+      "id": "70e2f0ca-d8bf-4423-8793-810fcef37301",
+      "name": "Simple Memory7"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        6620,
+        660
+      ],
+      "id": "30b4f740-93ba-4dbd-a174-76a1f585ab28",
+      "name": "Simple Memory8"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        7020,
+        660
+      ],
+      "id": "2a4d78e5-d498-4dc7-8531-1ab6ab6c5b4a",
+      "name": "Simple Memory9"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        7420,
+        660
+      ],
+      "id": "7a763a50-cb4e-4e34-b533-4376d840d6b6",
+      "name": "Simple Memory10"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Hooks\nUse all of our context to generate high-converting hooks.",
+        "height": 520,
+        "width": 5980,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3220,
+        300
+      ],
+      "id": "db37d8f9-b65a-4180-a3d7-f23df8c4c28a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        7800,
+        660
+      ],
+      "id": "d9c1f67a-b2c3-4490-a08c-5a20d59abad3",
+      "name": "Simple Memory11"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        8620,
+        660
+      ],
+      "id": "344623cd-4cda-4d9d-b5c9-322f87e46edf",
+      "name": "Simple Memory12"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1G2BKxHLARSOM0-41yBBMLdnN-Ta7GPuD",
+          "mode": "list",
+          "cachedResultName": "21 Bullet Secrets.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1G2BKxHLARSOM0-41yBBMLdnN-Ta7GPuD/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        8040,
+        480
+      ],
+      "id": "2f8701b6-ab2d-4b1f-bc03-3bdef248e22a",
+      "name": "Download 21 Bullet Secrets",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ucgode12fnKrz6Os",
+          "name": "Google Drive account (TB)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        9020,
+        660
+      ],
+      "id": "8b91c900-6102-4591-8cec-09aa99c09062",
+      "name": "Simple Memory13"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=CONTEXT FROM OUR PREVIOUS CONVO:\n\"\"\"\n{{ $('Found Doc Analysis Transcript').first().json.messages.map(item => { return item.human ? \"HUMAN:\\n\" + item.human : \"AI:\\n\" + item.ai }) }}\n\"\"\"\n\nCURRENT PROMPT (FOLLOW ONLY THE BELOW INSTRUCTIONS):\n\nNow, I want you to please write the full length ad using this hook:\n```\n{{ $('Split Out Hooks').item.json['data[\\'Pick 1 or more\\']'] }}\n```",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        11480,
+        600
+      ],
+      "id": "e830b99c-003e-4a4a-93e2-f2f97d04c4f5",
+      "name": "Write the Full Ad",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Final Mem Key').item.json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        13360,
+        800
+      ],
+      "id": "57a7f89f-bc20-46d5-844d-f23459ca5b53",
+      "name": "Simple Memory16"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        11240,
+        1320
+      ],
+      "id": "d84650d9-5abe-43db-878f-c1ec17263c0d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "CYM8ebYNeEmTo8nR",
+          "name": "Google Cloud (TryBello) - Gemini"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Final Mem Key').item.json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        13680,
+        820
+      ],
+      "id": "2cf9eef6-1bd3-42fe-83f9-ba0f4cdb8af1",
+      "name": "Simple Memory17"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Great work. Can you please send back to me the entire new ad copy with all of these specific suggestions that you had here implemented?\n\nDo not acknowledge me or anything, JUST send the copy, itself.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        13600,
+        620
+      ],
+      "id": "369bc79f-597f-4bbd-b030-7932e7950834",
+      "name": "Get Full Ad Copy w/ Sugg's Implem'td",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1VLMo-RZzoNDzAlRJQR1Tu1bwgOGCcEimMSzbjtCIB3E/edit?tab=t.0"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        11960,
+        760
+      ],
+      "id": "6782d6f7-80ff-48dc-a153-3a955331c5f5",
+      "name": "Download Copy Examples for AI Chiefing",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "oNnROMDBn5Hlr3b3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "19uRxgDt89Mqg8j_duZiz174HQAfy-_e0",
+          "mode": "list",
+          "cachedResultName": "How to Train Your Robo Copy Chief.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/19uRxgDt89Mqg8j_duZiz174HQAfy-_e0/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        11960,
+        560
+      ],
+      "id": "90c0d3b5-700b-4736-87c8-a41126e1edc0",
+      "name": "Download How to Train Your Robo Copy Chief",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ucgode12fnKrz6Os",
+          "name": "Google Drive account (TB)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1Ucr5bVNXm-dH1b2NdUTQ7HVWqfffYwpW",
+          "mode": "list",
+          "cachedResultName": "Copy Chiefing Checklist.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1Ucr5bVNXm-dH1b2NdUTQ7HVWqfffYwpW/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        11960,
+        360
+      ],
+      "id": "4c9e9a72-534a-4470-9618-4f8db6661d0a",
+      "name": "Download Copy Chiefing Checklist",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ucgode12fnKrz6Os",
+          "name": "Google Drive account (TB)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f4be4a9-af88-46ab-a89e-180cd86271e4",
+              "name": "docType",
+              "value": "Facebook Comments",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        340,
+        120
+      ],
+      "id": "fc6bd41b-b8f6-4910-a634-f6760a3a9ec6",
+      "name": "Set Doc Separator"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f4be4a9-af88-46ab-a89e-180cd86271e4",
+              "name": "docType",
+              "value": "Avatar Doc",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        340,
+        300
+      ],
+      "id": "1d3c8326-7281-4c6a-9c77-ee3dcefa63b4",
+      "name": "Set Doc Separator1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f4be4a9-af88-46ab-a89e-180cd86271e4",
+              "name": "docType",
+              "value": "Necessary Beliefs",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        340,
+        480
+      ],
+      "id": "24d2de16-0525-438c-b64c-3ee38a515222",
+      "name": "Set Doc Separator2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f4be4a9-af88-46ab-a89e-180cd86271e4",
+              "name": "docType",
+              "value": "Offer Brief",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        340,
+        680
+      ],
+      "id": "bef1aaca-91ad-4986-8ded-f7acd1ba5e12",
+      "name": "Set Doc Separator3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f4be4a9-af88-46ab-a89e-180cd86271e4",
+              "name": "docType",
+              "value": "Deep Research",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        340,
+        860
+      ],
+      "id": "2d81810e-173e-4622-901b-505c4931d726",
+      "name": "Set Doc Separator4"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1394MIIWfl9gcbJ2Jnwpe1ZILjjeml8KVLn32Ix9HeWg/edit?tab=t.0"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        480
+      ],
+      "id": "9b0256e7-3d38-4b64-9131-ecc110b36632",
+      "name": "Download Winning Control Ad Copy",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "oNnROMDBn5Hlr3b3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const contentSplit = $json.content.split('- SEPARATOR - DO NOT TOUCH (PUT CONTROL COPY BELOW) -')\n\nconst hookCTR = parseFloat(contentSplit[0].match(/[\\d.]+(?=%)/)[0])\nconst adCopy = contentSplit[1]\n\nreturn {\n  json: {\n    hookCTR,\n    adCopy\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        480
+      ],
+      "id": "6420e2ca-dec6-41f4-9b82-e744c554205b",
+      "name": "Split Winning Copy by Delimiter",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are my expert direct response copywriter and you specialize in writing highly persuasive\ndirect response style copy for my ecommerce brand that helps {{ $('Set Configs').first().json.targetDemographic }}\n{{ $('Set Configs').first().json.primaryBenefit }}. I want you to begin by please analyze the\ndocuments I attached and let me know your thoughts:\n```\n{{ $json.concatenated_content }}\n```",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        480
+      ],
+      "id": "7db9cdff-ae57-4dc9-8609-fd877c782a59",
+      "name": "Gather Thoughts on Found Docs",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Great work. Now that you've fully completed that process, I want you to simply analyze the hook and the hook only.\n\nWe currently have a click through rate of 10% and a link click the rate of {{ $('Split Winning Copy by Delimiter').first().json.hookCTR }}%. The KPIs are 10% and 3% so we are currently above/below KPI, but I want to specifically look at increasing the CTR (ALL) because that is solely done by the hook itself. So please take some time to analyze why the opening hook is so perfect and let me know",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2460,
+        480
+      ],
+      "id": "7ed83f04-434f-4eef-aca9-3bb1e007197d",
+      "name": "Analyze Winning Control Hook",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Great work. So now I'm going to be feeding you some data from the ad account. I'm going to feed you my top two performing ad copies.\n\nThe top performer is:\n```\n{{ $json.data[0].content }}\n```\n\nAnd the second top performer is:\n```\n{{ $json.data[1].content }}\n```\n\nI want you to take the ideas and concepts that are allowing these ad copies to perform very well and then write five new additional hooks based off this feedback.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        4740,
+        480
+      ],
+      "id": "8baf0c48-3278-4f95-98c2-d82cf9784ec7",
+      "name": "Generate +5 Hooks From Win'g Copy",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1y2VGYr87EblJC3k-ENHDvdoaegQgDBGnwFx12ZoVO44/edit?tab=t.0"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4040,
+        380
+      ],
+      "id": "f8d10b8c-6072-401c-812e-351d5ee31a0e",
+      "name": "Download Winning VSL Ad #1",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "oNnROMDBn5Hlr3b3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1aInGV4fyZdEKh5RRI6VdbvidPn5hDm4_1SMo3fY4rh4/edit?tab=t.0#heading=h.ii8cay16m8x6"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4040,
+        560
+      ],
+      "id": "ef579f38-ebfa-448d-a4e0-a81d411d07d3",
+      "name": "Download Winning VSL Ad #2",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "oNnROMDBn5Hlr3b3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4300,
+        480
+      ],
+      "id": "fe2c99a1-ee42-4a6e-8e72-09dc597f7a2d",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        4520,
+        480
+      ],
+      "id": "e6c5b77a-4a7a-480d-9384-258ed9ba421e",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=This is pretty good, but I want you to think even more outside the box. They are still drawing upon the same analysis of the top performers.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        5120,
+        480
+      ],
+      "id": "46e2b17a-e78c-4ac1-8f5a-751b8b5e1bab",
+      "name": "Get Outside the Box w/ Hooks",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        5560,
+        700
+      ],
+      "id": "49718ba5-cf91-4fe4-82a2-1e6a2c811e22",
+      "name": "Simple Memory18"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Not bad, but let's tie in the idea that's associated with the top performing ad copy.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        5480,
+        480
+      ],
+      "id": "85377308-c49d-4efb-b10c-d7436efe0ae5",
+      "name": "+Hooks Tied In w/ Top Perf'g Angle",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        9400,
+        660
+      ],
+      "id": "a19f005e-97f3-41a8-b8b4-9f3fe4741c9b",
+      "name": "Simple Memory19"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Great. Now, output every hooks we've generated.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        9340,
+        480
+      ],
+      "id": "d6b23a4c-f9f7-471d-9d38-9f98339b952d",
+      "name": "List All Hooks, Thus Far",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 3
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "sendAndWait",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $('Set Configs').first().json.outputSlackID }}",
+          "mode": "id"
+        },
+        "message": "Good morning!\n🫡 Today's Hooks are IN!\nClick below to see them and pick your favorites.\n\nPlease select one or more of your favorite hooks.\n\nIf you do not like any of the hooks, please i) do NOT select any hooks, and ii) give me feedback at the bottom of the form; I'll re-generate with your feedback in mind.",
+        "responseType": "customForm",
+        "defineForm": "json",
+        "jsonOutput": "=[\n   {\n\t\t\"fieldLabel\": \"Pick 1 or more\",\n\t\t\"fieldType\": \"dropdown\",\n\t\t\"fieldOptions\": {\n\t\t\t\"values\": {{ $json.output.map(item => ({option: item})).toJsonString() }}\n\t\t},\n\t\t\"multiselect\": true\n\t},\n    {\n\t\t\"fieldLabel\": \"Don't like them? Give me feedback! (Otherwise, leave this blank!)\",\n\t\t\"fieldType\": \"textarea\"\n\t}\n]",
+        "options": {
+          "appendAttribution": true
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        9720,
+        480
+      ],
+      "id": "9ee25e84-dbea-4902-9cb7-82111cc13ad0",
+      "name": "Get Favorite Hook",
+      "webhookId": "b29633a5-ea89-4b8d-a0c8-1f85da25cbdb",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "0DuT0unZDiKwbnLq",
+          "name": "Ammar's Slack Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "1QRMcrEQYSws5oDdTOJ8vsJxQoccwHQQOS5Zmx2sDLg4"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        5860,
+        480
+      ],
+      "id": "855b713e-f0fc-46e8-baac-89f86d82a60d",
+      "name": "Download AI YouTube Hooks Training (Alex)",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "oNnROMDBn5Hlr3b3",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=nice! Let's try something a little bit different.\n\nThis is a training that my business partner did about writing compelling YouTube Ad Hooks. Please analyze it and let me know your thoughts:\n```\n{{ $json.content }}\n```",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        6080,
+        480
+      ],
+      "id": "77fb362a-4f96-48f9-a1e6-261eb3e07b74",
+      "name": "Analyze YT Hook Swipe File",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=start coming up with as many potential new Ad Hooks as possible. When doing this, please make sure to base these hooks off the training document I shared and that you analyzed. Also for each hook please indicate WHICH of the 14 hook types from the document it corresponds to. Then at the end, based off the two top performing ad copy winners now, can you please tell me which of the options you believe is most likely to convert",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        6480,
+        480
+      ],
+      "id": "4d2d1c00-5c43-4236-aa3a-0b20780235bf",
+      "name": "More Hooks + Get Highest Odds Ones",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Great work. I got some hooks here that I really like.\n\nNow I want you to continue to reference the hooks document, but I want you to write these specifically in the first person. Because the creative that is being used for these particular ads is a before and after of a {{ $('Set Configs').first().json.targetDemographic }} who has {{ $('Set Configs').first().json.primaryBenefit }} with our product.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        6880,
+        480
+      ],
+      "id": "67dcd6ac-1986-4f52-a7de-941113759d4e",
+      "name": "Write in 1st Person",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Great work. Now I want you to write the rest of this ad now that the hook is completed. Please reference the top performing ad bodies that I sent you previously and write this entire ad start to finish. Your target length is around a thousand words and you can go up to 1400 words.\n\nOut of all the hooks, pick the absolute best one and go for it.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        7280,
+        480
+      ],
+      "id": "795bc97b-d951-4dd1-9650-9e1cc2ac33fe",
+      "name": "Write the Ad",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=This is perfect. Can you please send this back to me? But every new sentence should be on a new line.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        7660,
+        480
+      ],
+      "id": "3414eecf-b005-41a1-9e84-a6c34f438aaf",
+      "name": "Return Same w/ Line Breaks",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        8260,
+        480
+      ],
+      "id": "65d1b206-baf7-4ef4-b5e2-bfafb9557cb2",
+      "name": "Extract 21 Bullet Secrets",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Great work. Now let's go back to the hooks. I'm going to send you a document specifically on writing bullets and a lot of these can also be applied to writing headlines or hooks. Can you please take the learnings found in this particular document and write me 10 new hooks based off of the top performers for the {{ $('Set Configs').first().json.productName }}?\n\n21 Bullet Secrets:\n```\n{{ $json.text }}\n```",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        8480,
+        480
+      ],
+      "id": "04e145d8-a869-4436-b9a2-be65b5b108e6",
+      "name": "+10 Hooks From 21 Bullet Secrets",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        12200,
+        360
+      ],
+      "id": "61e3e0db-7234-4e72-af95-34ac13e57403",
+      "name": "Extract Copy Chiefing Checklist",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a93f63c5-7159-4acf-b478-2daceae21950",
+              "name": "copyChecklist",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        12420,
+        360
+      ],
+      "id": "011126ca-7dc5-4be4-a108-77b82f32ebb3",
+      "name": "Set Copy Checklist"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a93f63c5-7159-4acf-b478-2daceae21950",
+              "name": "howToTrainYourRoboCopyChief",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        12420,
+        560
+      ],
+      "id": "c1502c03-98f6-4b92-a93a-9ea4b46848f5",
+      "name": "Set How to Train Your Robo Copy Chief"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        12200,
+        560
+      ],
+      "id": "07d870e7-acf1-482f-bc08-27b10bf6b0fb",
+      "name": "Extract How to Train Your Robo Copy Chief",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a93f63c5-7159-4acf-b478-2daceae21950",
+              "name": "copyExamplesForAIChiefing",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        12200,
+        760
+      ],
+      "id": "b703883b-5035-4cfd-b51a-ae14512eec30",
+      "name": "Set Copy Examples for AI Chiefing"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        12760,
+        600
+      ],
+      "id": "9783e53e-a196-420d-b735-3d48c6b43cea",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1imGgqgeEp_qX52U340LlbYY4Os3kLkpoO-MHSIcnBfY",
+          "mode": "list",
+          "cachedResultName": "formtoro-responses-5_4_2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1imGgqgeEp_qX52U340LlbYY4Os3kLkpoO-MHSIcnBfY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 37497389,
+          "mode": "list",
+          "cachedResultName": "formtoro-responses-5_4_2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1imGgqgeEp_qX52U340LlbYY4Os3kLkpoO-MHSIcnBfY/edit#gid=37497389"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        11960,
+        960
+      ],
+      "id": "28e35d53-83b0-417a-927f-be2909d59048",
+      "name": "Get Formtoro Responses",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GXhqwiSwtSXsIHSL",
+          "name": "Google Sheets (TryBello)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        12200,
+        960
+      ],
+      "id": "89d9288d-9d80-4585-bccb-c15a7174428b",
+      "name": "Aggregate Formtoro Responses"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a93f63c5-7159-4acf-b478-2daceae21950",
+              "name": "formtoroResponsesRaw",
+              "value": "={{ $json.data.toJsonString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        12420,
+        960
+      ],
+      "id": "a389aad6-52cc-4bff-be75-9f41215bf25d",
+      "name": "Set Formtoro Responses Raw String"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Can you please copy chief this long form ad copy please?",
+        "options": {
+          "systemMessage": "={{ $json.chiefSystemPrompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        13220,
+        620
+      ],
+      "id": "46d752c5-d47e-4f0d-8b16-b000055d4070",
+      "name": "Copy Chief Long Form Ad",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fd07fe18-330d-4323-ac23-5c7b1d0bab6d",
+              "name": "chiefSystemPrompt",
+              "value": "=You are the Trybello CopyChief, a senior-level direct response editor trained specifically to improve copy for a DTC e-commerce brand called TryBello, which sells hair growth products to women over 40 struggling with hair thinning and loss.\n\nYour job is to make suggestions to the copy that is sent to you, not rewrite — to improve clarity, persuasion, emotional impact, and believability — without over-chieffing or diluting the core sales message. The most important thing is that the sales message is simple, emotionally compelling, and easy to understand.\n\nYou have been given access to seven key reference assets to guide your decision-making:\n\n📂 1.\nCopy Chiefing Methodology (3 reference documents)\n\nYou’ve been trained on three essential documents that outline how to properly chief copy at a world-class level:\n\n“Behind the Scenes of the CA Labs 7-Figure Agency”: a detailed checklist on how to improve pain/benefit language, add proof, simplify structure, and make the writing more readable and emotional.\n“How to Train Your Robo-Copy Chief”: contains modular prompt structures and editorial logic for improving claims, rhythm, specificity, tone, and power word usage.\n“Copy Examples for AI Chiefing”: shows before/after rewrites across dozens of sales letter examples — great copy becomes more specific, dimensional, emotional, and believable using this editing process.\n\n📂 2.\nThe Four Foundational TryBello Strategy Docs\n\nYou also have access to the core context behind the brand and its positioning:\n\nBelief Doc: A breakdown of the beliefs our customer must already have — or must come to believe — to make the sale. You should reinforce these beliefs subtly throughout copy, especially when editing for tone and proof.\nAvatar Doc: This outlines the psychographics, fears, desires, and daily frustrations of our ideal customer (women 40+ with hair thinning). All copy edits should be filtered through the lens of what she’s thinking, feeling, and believing.\nResearch Doc: This document includes market research, product data, customer voice insights, and competitor breakdowns. Use this to validate claims and improve believability.\nOffer Brief: The actual product offer, price, mechanism, guarantee, and unique selling angles. This keeps your copy edits aligned with our actual pitch.\n\n📂 3.\n2 Winning VSL Transcripts\n\nThese two high-performing video sales letter transcripts have proven to convert cold traffic effectively. Use them as swipe reference to:\n\nMatch voice and tone (conversational, emotionally grounded, rhythmic)\nMirror pacing, structure, and storytelling style\nReference effective phrasing and proof positioning\n\n📂 4.\nPost-Purchase Questionnaire (CSV file)\n\nThis file contains verbatim responses from actual TryBello customers after purchasing. Use it to:\n\nStrengthen voice-of-customer language\nIdentify key pain points and desired outcomes\nPull real emotional phrasing or lived experiences into your chiefing\n\n🧠 EDITING PHILOSOPHY: Less is More\n\nYou are not here to over-edit or overwrite.\n\nThe most important outcome of your work is clear, emotionally compelling, and easy-to-follow copy that communicates our core sales message with impact. The best copy reads like a conversation with a trusted friend — not a polished corporate script.\n\nWhen editing:\n\nDon’t sacrifice clarity for cleverness\nDon’t overwrite what’s already working\nFocus on dimensionalizing pain and benefits, improving social proof and believability, and maintaining natural flow and emotional cadence\nAlways ask: Does this make the core message clearer and more persuasive for a 40+ woman who’s losing her hair?\n\n✅ Use the following checklist on every piece of copy:\n\nClarity: Is the main promise obvious and repeated clearly throughout?\nDimensional Pain/Benefits: Are the pain points and promises vivid, specific, and emotionally grounded?\nProof: Are claims backed by specificity, numbers, authority, or believability enhancers?\nVoice of Customer: Is the language grounded in what real women say and feel?\nReadability: Are sentences short, punchy, and around a 3rd–5th grade level?\nFlow: Does the copy feel natural and rhythmic (using a mix of long and short sentences, conversational inflections, etc.)?\nNo Fluff: Are there any redundant sections or vague statements that could be cut or clarified?\n\nWhen you’re ready to chief a new piece of copy, ask the following:\n\n“Does this clearly communicate the right promise, to the right person, in the right way — using emotional language she actually feels — without confusing or overcomplicating the message?”\n\nThat’s the Trybello standard.\n\n---------------------\nATTACHED DOCUMENTS:\n---------------------\n\n=====================\nCopy Chiefing Methodology (3 reference documents):\n=====================\n\nBehind the Scenes of the CA Labs 7-Figure Agency:\n```\n{{ $json.copyChecklist }}\n```\n\nHow to Train Your Robo-Copy Chief:\n```\n{{ $json.howToTrainYourRoboCopyChief }}\n```\n\nCopy Examples for AI Chiefing:\n```\n{{ $json.copyExamplesForAIChiefing }}\n```\n\n=====================\nThe Four Foundational TryBello Strategy Docs:\n=====================\n\nBelief Doc:\n```\n{{ $('Download Necessary Beliefs').first().json.content }}\n```\n\nAvatar Doc:\n```\n{{ $('Download Avatar Doc').first().json.content }}\n```\n\nResearch Doc:\n```\n{{ $('Download Deep Research').first().json.content }}\n```\n\nOffer Brief:\n```\n{{ $('Download Offer Brief').first().json.content }}\n```\n\n=====================\n2 Winning VSL Transcripts:\n=====================\n\n#1:\n```\n{{ $('Download Winning VSL Ad #1').first().json.content }}\n```\n\n#2:\n```\n{{ $('Download Winning VSL Ad #2').first().json.content }}\n```\n\n=====================\nPost-Purchase Questionnaire (CSV file)\n=====================\n\nCSV:\n```\n{{ $json.formtoroResponsesRaw }}\n```",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        13000,
+        620
+      ],
+      "id": "89c741d7-cd28-4995-a9b3-9abbf907eb8a",
+      "name": "Set Chief System Prompt"
+    },
+    {
+      "parameters": {
+        "content": "## Chiefing",
+        "height": 920,
+        "width": 2040,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        11880,
+        260
+      ],
+      "id": "c4867f71-4467-429e-8afd-0f20a430de00",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        620
+      ],
+      "id": "f3b4a33a-3049-4344-ae7e-e5c0c8b17f73",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=These are pretty good. Pick the top 3 hooks, and please make a list of 10 additional hooks.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        8880,
+        480
+      ],
+      "id": "f733f6d3-bc4a-43a6-8aef-d9723776969f",
+      "name": "Generate 10 More Based on 3 Favs",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "afb4bfc9-00ad-4b6e-b0b2-b4bdb38b66a5",
+              "leftValue": "={{ $json.data['Don\\'t like them? Give me feedback! (Otherwise, leave this blank!)'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        9980,
+        480
+      ],
+      "id": "6a212dd9-164f-4123-913f-c6bff346ec35",
+      "name": "Check If Contains Feedback"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=I did not like any of the hooks you generated. Here is my feedback:\n```\n{{ $json.data['Don\\'t like them? Give me feedback! (Otherwise, leave this blank!)'] }}\n```\n\nGenerate 15 new hooks that meet my feedback.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        10280,
+        480
+      ],
+      "id": "f3b5a9b1-a761-48d1-a0f3-72bd52910d0c",
+      "name": "Re-Generate w/ Feedback In Mind",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 3
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        10360,
+        660
+      ],
+      "id": "a66540f0-0cb7-454c-9af4-5ffcfbf60b47",
+      "name": "Simple Memory15"
+    },
+    {
+      "parameters": {
+        "content": "## Write the Ad for Each Hook\nNow that we have the best hooks possible, go ahead and write a banger ad for each hook.",
+        "height": 620,
+        "width": 1000,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        10780,
+        300
+      ],
+      "id": "c58693a3-c555-4021-a07b-2b9260b54895",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Collect User Feedback\nIf hooks are inadequate, generate more based on user's feedback.",
+        "height": 520,
+        "width": 1420,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        9300,
+        300
+      ],
+      "id": "d994e49c-36d1-4af0-b075-e76219f4571e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Analyze Foundational Docs & Swipes\nLet's kick things off with some deep context about our product, offer, customer avatar, and more.",
+        "height": 1060,
+        "width": 3140
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2849227f-ccd8-49af-b9e1-dd98b9e4add7",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        7080,
+        1400
+      ],
+      "id": "cfc9d1d7-5e9c-4689-95d7-2cd9fef726d3",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "WQddZsi8Z9Kif5xa",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "typeVersion": 1,
+      "position": [
+        9520,
+        660
+      ],
+      "id": "058b83db-7c61-4f51-a9c9-39db167d26c3",
+      "name": "Auto-fixing Output Parser"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"description\": \"An array of the marketing hooks that were generated.\",\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"string\",\n    \"description\": \"A single marketing hook, nothing else.\"\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        9620,
+        800
+      ],
+      "id": "91be9441-c0c1-43e6-8fff-69bf6b3208fc",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "typeVersion": 1,
+      "position": [
+        10480,
+        660
+      ],
+      "id": "16260a82-7769-4f6b-81c8-356718e0ba36",
+      "name": "Auto-fixing Output Parser1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"description\": \"An array of the new marketing hooks that were generated based on the latest feedback.\",\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"string\",\n    \"description\": \"A single marketing hook, nothing else.\"\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        10580,
+        800
+      ],
+      "id": "2eec86b0-54bb-4337-b522-c1a11faf8cb0",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Final Mem Key').item.json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        11520,
+        780
+      ],
+      "id": "32559721-6e81-4e40-9cd7-309add804e7c",
+      "name": "Simple Memory20"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Configs').first().json.memKey }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2900,
+        660
+      ],
+      "id": "7a153259-2d97-4464-b1f8-9a9182e37f62",
+      "name": "Simple Memory14"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        2840,
+        480
+      ],
+      "id": "4fd2dc5e-fa5b-48fd-9f5d-83eda0f80c80",
+      "name": "Found Doc Analysis Transcript"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "qCZrGz3x38pNwk4j",
+          "mode": "list",
+          "cachedResultName": "Copy - Docs"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "document_name": "=Ad Copy - {{ new Date().toLocaleString('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '') + ' EST'\n }}",
+            "markdown_content": "={{ $json.output }}",
+            "drive_folder_id": "1HeDF76LLoeFJ7PH5K6hofn8iQrVdt18Y"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "document_name",
+              "displayName": "document_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "markdown_content",
+              "displayName": "markdown_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "drive_folder_id",
+              "displayName": "drive_folder_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        14040,
+        620
+      ],
+      "id": "fa348fe8-329d-43c3-8dcc-0a6c44c40f95",
+      "name": "Create Google Doc from Markdown"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $('Set Configs').first().json.outputSlackID }}",
+          "mode": "id"
+        },
+        "text": "=🫡 Your Ad Copy has Been Delivered! 📫\n\nHere’s your daily dose of DFY ad copy sir Reagan 😎\n\n{{ $json.id.map(item => `https://docs.google.com/document/d/${item}`).join('\\n\\n') }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        12200,
+        0
+      ],
+      "id": "2279385c-05d9-4231-b9c1-b6e5da2cf63e",
+      "name": "Send Final Ad Copy",
+      "webhookId": "8841766e-ec60-4309-917f-383c0bac32df",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "0DuT0unZDiKwbnLq",
+          "name": "Ammar's Slack Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c37b5d0-1e65-4f94-8677-c0debefa02f6",
+              "name": "memKey",
+              "value": "={{ ((+new Date()) + Math.random()).toString(36).replace('.', '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        11280,
+        600
+      ],
+      "id": "3c03c317-1c8e-4b73-bbb6-d9b58651ffa3",
+      "name": "Set Final Mem Key"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data['Pick 1 or more']",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        10840,
+        480
+      ],
+      "id": "d1ee9875-869b-4b15-9634-f6b53dc0fe35",
+      "name": "Split Out Hooks"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        11960,
+        0
+      ],
+      "id": "59f03350-b8cd-49ae-89fe-07fae7e0b978",
+      "name": "Aggregate Ad Copies"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        11060,
+        480
+      ],
+      "id": "66a1953a-06c8-4732-8dd1-f844ea82ce49",
+      "name": "Loop Over Items"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {}
+      }
+    ],
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-06-18T09:30:56.008-04:00",
+          "Readable date": "June 18th 2025, 9:30:56 am",
+          "Readable time": "9:30:56 am",
+          "Day of week": "Wednesday",
+          "Year": "2025",
+          "Month": "June",
+          "Day of month": "18",
+          "Hour": "09",
+          "Minute": "30",
+          "Second": "56",
+          "Timezone": "America/New_York (UTC-04:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Configs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download FB Comments": {
+      "main": [
+        [
+          {
+            "node": "Set Doc Separator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Avatar Doc": {
+      "main": [
+        [
+          {
+            "node": "Set Doc Separator1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Necessary Beliefs": {
+      "main": [
+        [
+          {
+            "node": "Set Doc Separator2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Offer Brief": {
+      "main": [
+        [
+          {
+            "node": "Set Doc Separator3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Deep Research": {
+      "main": [
+        [
+          {
+            "node": "Set Doc Separator4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Gather Thoughts on Found Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Gather Thoughts on Found Docs",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Configs": {
+      "main": [
+        [
+          {
+            "node": "Download Necessary Beliefs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download FB Comments",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download Avatar Doc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download Offer Brief",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download Deep Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Analyze Winning Control Copy",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Analyze Winning Control Hook",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Winning Control Copy": {
+      "main": [
+        [
+          {
+            "node": "Analyze Winning Control Hook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory3": {
+      "ai_memory": [
+        [
+          {
+            "node": "Generate 5 New Hooks",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory4": {
+      "ai_memory": [
+        [
+          {
+            "node": "Shorten Hooks",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate 5 New Hooks": {
+      "main": [
+        [
+          {
+            "node": "Shorten Hooks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory5": {
+      "ai_memory": [
+        [
+          {
+            "node": "Generate +5 Hooks From Win'g Copy",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shorten Hooks": {
+      "main": [
+        [
+          {
+            "node": "Download Winning VSL Ad #1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download Winning VSL Ad #2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory6": {
+      "ai_memory": [
+        [
+          {
+            "node": "Get Outside the Box w/ Hooks",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory7": {
+      "ai_memory": [
+        [
+          {
+            "node": "Analyze YT Hook Swipe File",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory8": {
+      "ai_memory": [
+        [
+          {
+            "node": "More Hooks + Get Highest Odds Ones",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory9": {
+      "ai_memory": [
+        [
+          {
+            "node": "Write in 1st Person",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory10": {
+      "ai_memory": [
+        [
+          {
+            "node": "Write the Ad",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory11": {
+      "ai_memory": [
+        [
+          {
+            "node": "Return Same w/ Line Breaks",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory12": {
+      "ai_memory": [
+        [
+          {
+            "node": "+10 Hooks From 21 Bullet Secrets",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download 21 Bullet Secrets": {
+      "main": [
+        [
+          {
+            "node": "Extract 21 Bullet Secrets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory13": {
+      "ai_memory": [
+        [
+          {
+            "node": "Generate 10 More Based on 3 Favs",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write the Full Ad": {
+      "main": [
+        [
+          {
+            "node": "Download Copy Chiefing Checklist",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download How to Train Your Robo Copy Chief",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download Copy Examples for AI Chiefing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Formtoro Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory16": {
+      "ai_memory": [
+        [
+          {
+            "node": "Copy Chief Long Form Ad",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Copy Chief Long Form Ad",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Get Full Ad Copy w/ Sugg's Implem'td",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "List All Hooks, Thus Far",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Generate 10 More Based on 3 Favs",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Re-Generate w/ Feedback In Mind",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Auto-fixing Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory17": {
+      "ai_memory": [
+        [
+          {
+            "node": "Get Full Ad Copy w/ Sugg's Implem'td",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Doc Separator": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Doc Separator1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Set Doc Separator2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Set Doc Separator3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Set Doc Separator4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Download Winning Control Ad Copy": {
+      "main": [
+        [
+          {
+            "node": "Split Winning Copy by Delimiter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Winning Copy by Delimiter": {
+      "main": [
+        [
+          {
+            "node": "Analyze Winning Control Copy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gather Thoughts on Found Docs": {
+      "main": [
+        [
+          {
+            "node": "Download Winning Control Ad Copy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Winning Control Hook": {
+      "main": [
+        [
+          {
+            "node": "Found Doc Analysis Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate +5 Hooks From Win'g Copy": {
+      "main": [
+        [
+          {
+            "node": "Get Outside the Box w/ Hooks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Winning VSL Ad #1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Winning VSL Ad #2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Generate +5 Hooks From Win'g Copy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Outside the Box w/ Hooks": {
+      "main": [
+        [
+          {
+            "node": "+Hooks Tied In w/ Top Perf'g Angle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory18": {
+      "ai_memory": [
+        [
+          {
+            "node": "+Hooks Tied In w/ Top Perf'g Angle",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "+Hooks Tied In w/ Top Perf'g Angle": {
+      "main": [
+        [
+          {
+            "node": "Download AI YouTube Hooks Training (Alex)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory19": {
+      "ai_memory": [
+        [
+          {
+            "node": "List All Hooks, Thus Far",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List All Hooks, Thus Far": {
+      "main": [
+        [
+          {
+            "node": "Get Favorite Hook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Favorite Hook": {
+      "main": [
+        [
+          {
+            "node": "Check If Contains Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download AI YouTube Hooks Training (Alex)": {
+      "main": [
+        [
+          {
+            "node": "Analyze YT Hook Swipe File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze YT Hook Swipe File": {
+      "main": [
+        [
+          {
+            "node": "More Hooks + Get Highest Odds Ones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "More Hooks + Get Highest Odds Ones": {
+      "main": [
+        [
+          {
+            "node": "Write in 1st Person",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write in 1st Person": {
+      "main": [
+        [
+          {
+            "node": "Write the Ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write the Ad": {
+      "main": [
+        [
+          {
+            "node": "Return Same w/ Line Breaks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return Same w/ Line Breaks": {
+      "main": [
+        [
+          {
+            "node": "Download 21 Bullet Secrets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract 21 Bullet Secrets": {
+      "main": [
+        [
+          {
+            "node": "+10 Hooks From 21 Bullet Secrets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "+10 Hooks From 21 Bullet Secrets": {
+      "main": [
+        [
+          {
+            "node": "Generate 10 More Based on 3 Favs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Copy Chiefing Checklist": {
+      "main": [
+        [
+          {
+            "node": "Extract Copy Chiefing Checklist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Copy Chiefing Checklist": {
+      "main": [
+        [
+          {
+            "node": "Set Copy Checklist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download How to Train Your Robo Copy Chief": {
+      "main": [
+        [
+          {
+            "node": "Extract How to Train Your Robo Copy Chief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract How to Train Your Robo Copy Chief": {
+      "main": [
+        [
+          {
+            "node": "Set How to Train Your Robo Copy Chief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Copy Examples for AI Chiefing": {
+      "main": [
+        [
+          {
+            "node": "Set Copy Examples for AI Chiefing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Copy Checklist": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set How to Train Your Robo Copy Chief": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Set Copy Examples for AI Chiefing": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Set Chief System Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Formtoro Responses": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Formtoro Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Formtoro Responses": {
+      "main": [
+        [
+          {
+            "node": "Set Formtoro Responses Raw String",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Formtoro Responses Raw String": {
+      "main": [
+        []
+      ]
+    },
+    "Set Chief System Prompt": {
+      "main": [
+        [
+          {
+            "node": "Copy Chief Long Form Ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy Chief Long Form Ad": {
+      "main": [
+        [
+          {
+            "node": "Get Full Ad Copy w/ Sugg's Implem'td",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate 10 More Based on 3 Favs": {
+      "main": [
+        [
+          {
+            "node": "List All Hooks, Thus Far",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory15": {
+      "ai_memory": [
+        [
+          {
+            "node": "Re-Generate w/ Feedback In Mind",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Contains Feedback": {
+      "main": [
+        [
+          {
+            "node": "Re-Generate w/ Feedback In Mind",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split Out Hooks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-Generate w/ Feedback In Mind": {
+      "main": [
+        [
+          {
+            "node": "Get Favorite Hook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Configs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Gather Thoughts on Found Docs",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Analyze Winning Control Copy",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Analyze Winning Control Hook",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Generate 5 New Hooks",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Shorten Hooks",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Generate +5 Hooks From Win'g Copy",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Get Outside the Box w/ Hooks",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "+Hooks Tied In w/ Top Perf'g Angle",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Analyze YT Hook Swipe File",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "More Hooks + Get Highest Odds Ones",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Write in 1st Person",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Write the Ad",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Return Same w/ Line Breaks",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "+10 Hooks From 21 Bullet Secrets",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Write the Full Ad",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "List All Hooks, Thus Far",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Re-Generate w/ Feedback In Mind",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory20": {
+      "ai_memory": [
+        [
+          {
+            "node": "Write the Full Ad",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory14": {
+      "ai_memory": [
+        [
+          {
+            "node": "Found Doc Analysis Transcript",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Found Doc Analysis Transcript": {
+      "main": [
+        [
+          {
+            "node": "Generate 5 New Hooks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Full Ad Copy w/ Sugg's Implem'td": {
+      "main": [
+        [
+          {
+            "node": "Create Google Doc from Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Google Doc from Markdown": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Final Mem Key": {
+      "main": [
+        [
+          {
+            "node": "Write the Full Ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Hooks": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Ad Copies": {
+      "main": [
+        [
+          {
+            "node": "Send Final Ad Copy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Ad Copies",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Final Mem Key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "95e4c2c4-e90e-47cc-9dc7-3614516977fc",
+  "meta": {
+    "instanceId": "8299d4f26d2870c046a56402a35299ee53cd421c211f1abae13ffa1e40b769be"
+  },
+  "id": "lJCo20jDwc3nGANK",
+  "tags": []
+}
