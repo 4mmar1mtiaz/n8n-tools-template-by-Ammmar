@@ -1,0 +1,1116 @@
+{
+  "name": "This n8n AI Agent Avatar will AUTOMATE your Social Media",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        1312
+      ],
+      "id": "52db24a3-e6d1-45e2-99de-f85ccfa7519f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "# INSTRUCTIONS\n\nPerform the following tasks, in order:\n\n1. Fetch the top 10 stories from Hacker News from the past 24 hours related to AI or LLMs. \n\n2. Select the top story that is most likely to go viral on social media. \n\n3. Fetch the article and Hacker News comments.\n\n4. Create a 20-second monologue script for an AI avatar video, following these guidelines:\n   - The script should be approximately 30 seconds when spoken aloud.\n   - Include lots of details and statistics from the article.\n   - Use 6th grade reading level.\n   - Balanced viewpoint.\n   - Punctuations indicate pauses, but we want to minimize unnatural pauses, so only use a comma for punctuation.\n   - Do not use any commas in the first 2 sentences, and use them sparingly in the rest of the script.\n\n5. Update the script's first sentence to use sensational viral hooks, tailored to the content, that grab the viewer's attention.\n\n6. Replace the last sentence with: \"Hit follow to stay ahead in AI!\"\n\n# OUTPUT FORMAT\n\nONLY output the exact video script. Do not output anything else. NEVER include intermediate thoughts, notes, or formatting.",
+        "options": {
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        448,
+        1312
+      ],
+      "id": "038061c4-bfc7-4c1d-838b-a0b781c92e65",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "articleId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Article_ID', ``, 'string') }}",
+        "additionalFields": {
+          "includeComments": true
+        }
+      },
+      "type": "n8n-nodes-base.hackerNewsTool",
+      "typeVersion": 1,
+      "position": [
+        672,
+        1504
+      ],
+      "id": "a428a829-49a1-43c8-acc4-6ef9a13b5df9",
+      "name": "Fetch HN Article"
+    },
+    {
+      "parameters": {
+        "resource": "all",
+        "additionalFields": {
+          "keyword": "AI",
+          "tags": [
+            "front_page"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.hackerNewsTool",
+      "typeVersion": 1,
+      "position": [
+        528,
+        1504
+      ],
+      "id": "fe8c463f-bdb2-4985-9d05-023432797d2a",
+      "name": "Fetch HN Front Page"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2064,
+        1312
+      ],
+      "id": "c8f526c9-c693-4231-a071-b7930c01a455",
+      "name": "Wait",
+      "webhookId": "d9404622-0a06-4a65-959e-badd4fd87465",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"heygen_api_key\": \"\",\n  \"avatar_id\": \"\",\n  \"voice_id\": \"\",\n  \"has_background_video\": false,\n  \"background_video_url\": \"https://database.blotato.io/storage/v1/object/public/public_media/4ddd33eb-e811-4ab5-93e1-2cd0b7e8fb3f/videogen2-render-e6b398a2-5859-4a77-88ef-2345bcefdc98.mp4\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        1312
+      ],
+      "id": "a108e4d4-6185-4cc2-842f-805fd6593370",
+      "name": "Setup Heygen"
+    },
+    {
+      "parameters": {
+        "url": "https://api.heygen.com/v1/video_status.get",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "video_id",
+              "value": "={{ $('Merge').item.json.data.video_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "={{ $('Setup Heygen').item.json.heygen_api_key }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2192,
+        1312
+      ],
+      "id": "306fcf92-8b04-4612-87db-760dc9d33d7a",
+      "name": "Get Avatar Video"
+    },
+    {
+      "parameters": {
+        "content": "# Research Tech News using Hackernews\n\n- This template uses the free Hackernews tool to fetch trending tech news\n- If your niche is outside of tech, I suggest replacing the Hackernews tool with SerpAPI tool, which allows your AI agent to use Google search to find recent industry news",
+        "height": 868,
+        "width": 940,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        192,
+        896
+      ],
+      "id": "6b83f14b-de64-415b-9885-a4b5dbd3eef5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Create AI Clone Video Using HeyGen\n\n- This requires HeyGen API plan (paid); the free plan is insufficient: https://www.heygen.com/api-pricing\n- If you have a long script, you may need to increase the WAIT time.\n- You can use a custom Elevenlabs voice by integrating Elevenlabs within HeyGen web app.\n- Tutorial on how to create a high-quality avatar and voice clone: https://youtu.be/_jogmHuuKXk\n- If you want a background video playing behind your avatar: (1) ensure you have an avatar with background removed which requires a higher tier plan; (2) open SETUP HEYGEN node and set parameter 'has_background_video' to true; (3) open SETUP HEYGEN node and replace video URL in parameter 'background_video_url'",
+        "height": 868,
+        "width": 1536,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        912
+      ],
+      "id": "97ccdcca-477c-4f25-b203-688b610238bb",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Setup 1\n\nFill out \"Setup Heygen\"",
+        "height": 116,
+        "width": 182,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        1504
+      ],
+      "id": "449c13f3-1fa2-4ff8-a64c-fd34baabf917",
+      "name": "Sticky Note3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        1296
+      ],
+      "id": "c8b157ae-369c-48f7-a74a-a709b1b7f1c0",
+      "name": "Upload media"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.heygen.com/v2/video/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "={{ $('Setup Heygen').item.json.heygen_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_inputs\": [\n    {\n      \"character\": {\n        \"type\": \"avatar\",\n        \"avatar_id\": \"{{ $('Setup Heygen').item.json.avatar_id }}\",\n        \"avatar_style\": \"normal\",\n        \"scale\": 1.0,\n        \"offset\": {\n          \"x\": 0.15,\n          \"y\": 0.15\n        },\n        \"matting\": true\n      },\n      \"voice\": {\n        \"type\": \"text\",\n        \"input_text\": {{ $('AI Agent').item.json.output.toJsonString() }},\n        \"voice_id\": \"{{ $('Setup Heygen').item.json.voice_id }}\",\n        \"speed\": 1.1,\n        \"pitch\": 50,\n        \"emotion\": \"Excited\"\n      },\n      \"background\": {\n        \"type\": \"video\",\n        \"url\": \"{{ $('Setup Heygen').item.json.background_video_url }}\",\n        \"play_style\": \"loop\",\n        \"fit\": \"cover\"\n      }\n    }\n  ],\n  \"dimension\": {\n    \"width\": 720,\n    \"height\": 1280\n  },\n  \"aspect_ratio\": \"9:16\",\n  \"caption\": false,\n  \"title\": \"{{ $('Write Short Caption').item.json.message.content }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1648,
+        1200
+      ],
+      "id": "5151d398-4035-4ed9-ace8-0ce2eb60bfbe",
+      "name": "Create Avatar Video WITH Background Video"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.heygen.com/v2/video/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "={{ $('Setup Heygen').item.json.heygen_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_inputs\": [\n    {\n      \"character\": {\n        \"type\": \"avatar\",\n        \"avatar_id\": \"{{ $('Setup Heygen').item.json.avatar_id }}\",\n        \"avatar_style\": \"normal\",\n        \"scale\": 1.0\n      },\n      \"voice\": {\n        \"type\": \"text\",\n        \"input_text\": {{ $('AI Agent').item.json.output.toJsonString() }},\n        \"voice_id\": \"{{ $('Setup Heygen').item.json.voice_id }}\",\n        \"speed\": 1.1,\n        \"pitch\": 50,\n        \"emotion\": \"Excited\"\n      }\n    }\n  ],\n  \"dimension\": {\n    \"width\": 720,\n    \"height\": 1280\n  },\n  \"aspect_ratio\": \"9:16\",\n  \"caption\": false,\n  \"title\": \"{{ $('Write Short Caption').item.json.message.content }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1648,
+        1424
+      ],
+      "id": "46ddaab9-ddda-402b-8fee-2d7253b5ae0c",
+      "name": "Create Avatar Video WITHOUT Background Video"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "73001c6b-fae2-48cd-b0a6-aa453b837902",
+              "leftValue": "={{ $('Setup Heygen').item.json.has_background_video }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1440,
+        1312
+      ],
+      "id": "66064049-679b-42a9-8863-af86e871aedf",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1856,
+        1312
+      ],
+      "id": "bccc11f8-bae6-4222-aeed-e52cc5e82a0b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "content": "# FULL TUTORIAL\n\n## Tutorial\n\nhttps://help.blotato.com/api/templates/3-hackernews-to-ai-clone-videos\n\n## Description\n\nThis fully automated AI Avatar Social Media system creates talking head AI clone videos, WITHOUT having to film or edit yourself. It combines n8n, AI agent, HeyGen, and Blotato to research, create, and distribute talking head AI clone videos to every social media platform every single day.\n\n## Overview\n\n**1. Trigger: Schedule**\n- Configured to run once daily at 10am\n\n**2. AI News Research**\n- Research viral news from tech-focused forum, Hackernews\n- Fetch the selected news item, plus discussion comments\n\n**3. AI Writer**\n- AI writes 30-second monologue script\n- AI writes short video caption\n\n**4. Create Avatar Video**\n- Call Heygen API (requires paid API plan), specifying your avatar ID and voice ID\n- Create avatar video, optionally passing in an image/video background if you have a green screen avatar (matte: true)\n\n**5. Get Video**\n- Wait awhile, then fetch completed avatar video\n- Upload video to Blotato\n\n**6. Publish to Social Media via Blotato**\n- Connect your Blotato account\n- Choose your social accounts\n- Either post immediately or schedule for later",
+        "height": 912,
+        "width": 624,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        336,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "60ee5016-ff80-4cbe-b455-8f72607da799",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Error Report\n\n👉 View run logs and results.\n\n👉 API Dashboard:\n https://my.blotato.com/api-dashboard",
+        "height": 192,
+        "width": 288,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3456,
+        1600
+      ],
+      "typeVersion": 1,
+      "id": "030505cc-f1bb-41a6-b7de-3be44c2463ae",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "numberInputs": 9
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3536,
+        1168
+      ],
+      "id": "0be9f889-8200-4d12-9cd6-7f779dfbfb49",
+      "name": "Error Report",
+      "notesInFlow": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Post Everywhere\n\n## IMPORTANT\nDo not post the same image/video over and over again, otherwise it will be flagged as spam. Make sure to disclose AI generated content if you're using avatars.\n\n👉  **Blotato API Docs**: https://help.blotato.com/api\n✅  **Troubleshoot Errors**: https://my.blotato.com/api-dashboard\n📷  **Media Requirements**: https://help.blotato.com/api/media\n🛠️  **Contact help**: log into blotato > click support button in bottom right corner",
+        "height": 1968,
+        "width": 912,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        272
+      ],
+      "id": "042e96a4-5ee1-40a7-a8c2-29522bf743b0",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# Platform Specific Notes\n\n## Tiktok\nYou can post images, videos, and slideshows. Your Tiktok account must be warmed up before using Blotato, otherwise you'll get low views. [Follow this warm up guide](https://help.blotato.com/platforms/tiktok/brand-new-accounts). \n\nCheck out best practices and troubleshooting FAQs:\nhttps://help.blotato.com/platforms/tiktok\n\n## Linkedin\nYou can post text, images, videos, and PDF carousels. Check out best practices and troubleshooting FAQs:\nhttps://help.blotato.com/platforms/linkedin\n\n## Facebook\nYou can post text, images, regular videos, and reels. Check out best practices and troubleshooting FAQs\nhttps://help.blotato.com/platforms/facebook\n\n## Instagram\nYou can post images, reels, stories, and slideshows. Check out best practices and troubleshooting FAQs:\nhttps://help.blotato.com/platforms/instagram\n\n## Twitter\nYou can post text, images, and videos. You can post a long-form thread by clicking \"Show Advanced Settings\". Check out best practices and troubleshooting FAQs:\nhttps://help.blotato.com/platforms/twitter\n\n## Threads\nYou can post text, images, and videos. You can post a long-form thread by clicking \"Show Advanced Settings\". Check out best practices and troubleshooting FAQs:\nhttps://help.blotato.com/platforms/threads\n\n## Bluesky\nYou can post text, images, and videos. You can post a long-form thread by clicking \"Show Advanced Settings\". Check out best practices and troubleshooting FAQs:\nhttps://help.blotato.com/platforms/bluesky\n\n## Youtube\nYou can post Youtube shorts and long-form videos. You don't need to do anything. Youtube automatically posts Shorts if your video is <2 minutes and 9:16 aspect ratio.\n\nBrand new Youtube accounts are limited to a few posts per day via API. You can still upload manually through Youtube website. This restriction is directly from Youtube and is gradually lifted as you post consistently.\n\nCheck out best practices and troubleshooting FAQs:\nhttps://help.blotato.com/platforms/youtube\n\n## Pinterest\nYou can post image and video pins. You must warm up your Pinterest account by posting a few pins per day, gradually ramping up.\n\nHow to Get Your Pinterest Board ID:\nGo to Blotato, create a Pinterest post, click Publish, and you'll see your board IDs. Copy board ID to here.\n\nCheck out best practices and troubleshooting FAQs:\nhttps://help.blotato.com/platforms/pinterest\n\n## Need More Help?\n\nLog into Blotato.com\nClick support button in bottom right corner.\nSabrina Ramonov🍄 replies within 24 hours most weekdays.",
+        "height": 1632,
+        "width": 608,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3856,
+        400
+      ],
+      "id": "97c2a374-09f8-4478-9f52-7b938dfc1683",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "# Setup 2\n1. Open each node\n2. Select your social account\n3. Deactivate platforms you don't need\n3. 👉 **You don't need to do anything else!**",
+        "height": 176,
+        "width": 320,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3392,
+        576
+      ],
+      "id": "da0fce26-9f62-4f7a-a8a8-f9d8e358b633",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "# Setup\n\n- Sign up for Blotato.com\n- Generate Blotato API Key by going to Settings > API > Generate API Key (paid feature only)\n- If you're using n8n, ensure you have \"Verified Community Nodes\" enabled in your n8n Admin Panel. Then, install \"Blotato\" verified community node.\n- Create Blotato credential\n- Sign up for Heygen web plan and API plan\n- Paste your Heygen API key\n- Paste your Heygen avatar ID\n- Paste your Heygen voice ID\n- If you want to pass in an optional background video as a green screen effect, use the 2nd agent background_video_url that is already filled out (change it later, after ensuring everything work\n- Complete the 2 setup steps in BROWN sticky notes in this template",
+        "height": 368,
+        "width": 784,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1568,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "5b9f53ee-eb23-4022-ad17-a6de8e9419e6",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "## Troubleshooting Checklist\n- HeyGen API paid plan\n- make sure you copied your avatar ID correctly, not the group avatar ID\n- If your script is long, it takes more time for your video to finish",
+        "width": 320,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2096,
+        1536
+      ],
+      "typeVersion": 1,
+      "id": "b16a83f7-b240-483c-b441-6a2a38940a15",
+      "name": "Sticky Note11",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e511deb8-8e4c-45db-aa35-18f43a0552b6",
+              "leftValue": "={{ $('Get Avatar Video').item.json.data.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2320,
+        1312
+      ],
+      "id": "122df370-2580-4457-bd27-180fea1c2180",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        688
+      ],
+      "id": "d823323c-3fe4-4dbd-a0cd-5c7661fd449e",
+      "name": "Tiktok [BLOTATO]",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        848
+      ],
+      "id": "e811c03f-2fdd-4c32-a273-7b36eca5a9f4",
+      "name": "Linkedin [BLOTATO]",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        1008
+      ],
+      "id": "1504b1e0-34e7-4105-ac7f-f5d985ad256a",
+      "name": "Facebook [BLOTATO]",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        1168
+      ],
+      "id": "36ef3b29-f403-4292-9a1e-e13925ecbf10",
+      "name": "Instagram [BLOTATO]",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        1328
+      ],
+      "id": "c9127ee4-d732-41a5-a484-bf8fdbb1a7cc",
+      "name": "Twitter [BLOTATO]",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        1488
+      ],
+      "id": "5a6f4ac6-46be-4203-8435-2efb42193d8c",
+      "name": "Youtube [BLOTATO]",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        1648
+      ],
+      "id": "cf5b38c2-c2be-4847-ace0-b354bb88ca38",
+      "name": "Threads [BLOTATO]",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        1808
+      ],
+      "id": "ab884a89-947d-4af0-9da6-84c8074fd17f",
+      "name": "Bluesky [BLOTATO]",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@blotato/n8n-nodes-blotato.blotato",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        1968
+      ],
+      "id": "0a3356f2-3725-47f8-bf6c-d43ef2ad2c17",
+      "name": "Pinterest [BLOTATO]",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-r1-distill-llama-70b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        352,
+        1520
+      ],
+      "id": "55409f62-8c64-40c9-89b2-321480916ded",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "So5I8ctK35A8Dllm",
+          "name": "n8n no code"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# EXAMPLE\n\n<example>\nMany people have recently asked me about ask engine optimization, which is all about optimizing your website and existing content, so it can be pulled into ChatGPT and other generative AI tools. Consider that generative AI tools tend to be more conversational in nature and have a Q&A type format, so search engines will want to pull in snippets that concisely answer a user’s question.- what is ask engine optimization in the age of AI?- How does traditional SEO compare to ask engine optimization today?- top tips and tricks to get started with ask engine optimization?\n\n#ai #askengineoptimization #chatgpt #seo\n</example>\n\n# CONTEXT\n\nInfer the topic from the sources provided.\n\n# WRITING STYLE\n\nHere’s how you always write:\n\n<writing_style>\n\n- Your writing style is spartan and informative.\n- Use clear, simple language.\n- Employ short, impactful sentences.\n- Use active voice; avoid passive voice.\n- Focus on practical, actionable insights.\n- Incorporate data or statistics to support claims when possible.\n- Use \"\"\"\"\"\"\"\"you\"\"\"\"\"\"\"\" and \"\"\"\"\"\"\"\"your\"\"\"\"\"\"\"\" to directly address the reader.\n- Avoid metaphors and clichés.\n- Avoid generalizations.\n- Do not include common setup language in any sentence, including: in conclusion, in closing, etc.\n- Do not output warnings or notes—just the output requested.\n- Do not use hashtags.\n- Do not use semicolons.\n- Do not use emojis.\n- Do not use asterisks.\n- Do not use adjectives and adverbs.\n- Do NOT use these words:\n\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"can, may, just, that, very, really, literally, actually, certainly, probably, basically, could, maybe, delve, embark, enlightening, esteemed, shed light, craft, crafting, imagine, realm, game-changer, unlock, discover, skyrocket, abyss, you're not alone, in a world where, revolutionize, disruptive, utilize, utilizing, dive deep, tapestry, illuminate, unveil, pivotal, enrich, intricate, elucidate, hence, furthermore, realm, however, harness, exciting, groundbreaking, cutting-edge, remarkable, it. remains to be seen, glimpse into, navigating, landscape, stark, testament, in summary, in conclusion, moreover, boost, bustling, opened up, powerful, inquiries, ever-evolving\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\n</writing_style>\n\n# PLANNING\n\nYour goal is to write a 50-word video caption based on the provided source.\n\n1. Analyze the provided sources thoroughly.\n2. Study the <example> post carefully. You will be asked to replicate their:\n    - Overall structure.\n    - Tone and voice.\n    - Formatting (including line breaks and spacing).\n    - Length (aim for a similarly detailed post).\n    - Absence of emojis.\n    - Max 5 relevant hashtags.\n    - Emotional resonance.\n\n# OUTPUT\nFollow the GUIDELINES below to write the post. Use your analysis from step 1 and step 2. Use the provided sources as the foundation for your post, expanding on it significantly while maintaining the style and structure of the examples provided from step 2. You MUST use information from the provided sources. Make sure you adhere to your <writing_style>.\n\n<guidelines>\nThe description should be structured as follows:\n1. Start with 1 paragraph summarizing the source\n2. Newline, followed by 3 bullet points of questions that a viewer might ask on a search engine about the source\n3. Newline, followed by these hashtags: #ai #artificialintelligence #ainews #sabrinaramonov #aiavatar\n</guidelines>\n\nTake a deep breath and take it step-by-step!\n\n# INPUT\nUse the following information sources:\n<sources>\n{{ $json.output }}\n</sources>",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        1040
+      ],
+      "id": "25689a08-a6e5-491e-8eac-350a773b7015",
+      "name": "Write long caption"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-r1-distill-llama-70b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        768,
+        1280
+      ],
+      "id": "d558781f-1bd5-46ea-8e73-8787b8d1e652",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "So5I8ctK35A8Dllm",
+          "name": "n8n no code"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write a 1 viral sentence, max 90 characters, summarizing the video content, use 6th grade language, balanced neutral perspective, no emojis:\n\n<content>\n{{ $json.message.content }}\n</content>",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        1408
+      ],
+      "id": "e8b67c5e-1aaa-497f-9916-12f67a317350",
+      "name": "Write long caption1"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-r1-distill-llama-70b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        816,
+        1648
+      ],
+      "id": "43b14efc-99ec-41d2-b755-72f0c70db257",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "So5I8ctK35A8Dllm",
+          "name": "n8n no code"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Write long caption1": [
+      {
+        "json": {
+          "output": "<think>\nAlright, I need to write a viral sentence summarizing the video content. The user wants it to be at most 90 characters, using 6th-grade language and a balanced, neutral perspective without emojis.\n\nFirst, I should figure out the main topic of the video. It seems to be about AI's role in creativity and jobs. The video discusses both the benefits and the challenges, so I need to balance those aspects.\n\nUsing simple language, I should make it catchy but clear. Maybe start with \"AI is...\" to grab attention. I want to show that AI can help but also take away jobs, so I'll include both points.\n\nLet me check the character count. \"AI is boosting creativity but also taking jobs, sparking debate.\" That's concise and under 90 characters. It presents both sides without bias, perfect for a neutral perspective.\n\nI think this sentence works well. It's easy to understand and highlights the key points of the video.\n</think>\n\n\"AI is boosting creativity but also taking jobs, sparking debate.\""
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Write long caption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch HN Article": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch HN Front Page": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup Heygen": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get Avatar Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Avatar Video": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Avatar Video WITH Background Video": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Create Avatar Video WITH Background Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Avatar Video WITHOUT Background Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Avatar Video WITHOUT Background Video": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Upload media",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write long caption",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write long caption1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write long caption": {
+      "main": [
+        [
+          {
+            "node": "Write long caption1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write long caption1": {
+      "main": [
+        [
+          {
+            "node": "Setup Heygen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload media": {
+      "main": [
+        [
+          {
+            "node": "Tiktok [BLOTATO]",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Linkedin [BLOTATO]",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Facebook [BLOTATO]",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Instagram [BLOTATO]",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Twitter [BLOTATO]",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Youtube [BLOTATO]",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Threads [BLOTATO]",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Bluesky [BLOTATO]",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Pinterest [BLOTATO]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiktok [BLOTATO]": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Error Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Linkedin [BLOTATO]": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Error Report",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Facebook [BLOTATO]": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Error Report",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Instagram [BLOTATO]": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Error Report",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Twitter [BLOTATO]": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Error Report",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Youtube [BLOTATO]": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Error Report",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Threads [BLOTATO]": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Error Report",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Bluesky [BLOTATO]": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Error Report",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Pinterest [BLOTATO]": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Error Report",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bbba7ef6-ccf0-4569-aab4-2867899880ff",
+  "meta": {
+    "instanceId": "d1dd00401d5281f6a3e0e58f0817a778c2b4c05beb4a3ce211a063e7df1f783d"
+  },
+  "id": "jwYFriqGcnM29PK1",
+  "tags": []
+}
+
