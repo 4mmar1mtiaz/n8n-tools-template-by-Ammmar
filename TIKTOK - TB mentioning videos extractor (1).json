@@ -4,7 +4,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.apify.com/v2/acts/clockworks~tiktok-scraper/runs?token=apify_api_Gdv1HzkBdTTkv3G2bIpazLimKi7G0x2ilDNK",
+        "url": "https://api.apify.com/v2/acts/clockworks~tiktok-scraper/runs?",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -31,7 +31,7 @@
     },
     {
       "parameters": {
-        "url": "=https://api.apify.com/v2/datasets/{{ $json.data.defaultDatasetId }}/items?token=apify_api_3O9vibjRxB8X0YQvJbjuRwyWLNQbbD4oSZgL",
+        "url": "=https://api.apify.com/v2/datasets/{{ $json.data.defaultDatasetId }}/items?token=apify_api_",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
