@@ -4,7 +4,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.apify.com/v2/acts/clockworks~tiktok-scraper/runs?token=apify_api_Gdv1HzkBdTTkv3G2bIpazLimKi7G0x2ilDNK",
+        "url": "https://api.apify.com/v2/acts/clockworks~tiktok-scraper/runs?token=apify_api_",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
