@@ -31,7 +31,7 @@
     },
     {
       "parameters": {
-        "url": "=https://api.apify.com/v2/datasets/{{ $json.data.defaultDatasetId }}/items?token=apify_api_3O9vibjRxB8X0YQvJbjuRwyWLNQbbD4oSZgL",
+        "url": "=https://api.apify.com/v2/datasets/{{ $json.data.defaultDatasetId }}/items?token=apify_api_",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
