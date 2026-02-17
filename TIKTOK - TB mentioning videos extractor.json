@@ -205,7 +205,7 @@
       "webhookId": "eebdbfa2-c3a0-4af0-860d-6a21305ac280",
       "credentials": {
         "slackOAuth2Api": {
-          "id": "0DuT0unZDiKwbnLq",
+          "id": "",
           "name": "Ammar's Slack Account"
         }
       }
